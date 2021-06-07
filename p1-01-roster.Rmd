@@ -2,3 +2,92 @@
 
 # The Household Roster
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(attr.source = '.numberLines')
+```
+
+```{r message=FALSE, warning=FALSE, results=FALSE}
+library(tidyverse)
+library(lubridate)
+library(scales)
+library(patchwork)
+```
+
+I load the survey roster data for each year and combine it into a single tibble/dataframe for easy analysis. 
+
+I have specified a few columns directly as the correct datatypes using the `col_types` argument and if I had a targetted analysis in mind I would have used `cols_only` to save time and memory. Then I manually fix inconsistent encoding in factor columns and set certain sentinel values to NA using information from the questionnaire pdf. I also create a `has_spouse` column which I will extensively use for the analysis as a simplification of marital status which usually contains other statuses like divorced, engaged etc. Similarly I make an `age_group` column to group analyses/plots later. 
+
+*There are parsing errors for some columns. I find it better to just choose the required columns for the analysis with `cols_only` and manually specify types for them then manually fix encoding issues.*
+
+```{r warning=FALSE, results=FALSE}
+root_dir <- "C:/Users/R/Desktop/pslm/data_clean"
+year_dirs <- head(list.dirs(root_dir, recursive = F), -1)
+all_files <- map(year_dirs, function(year_dir) paste(year_dir, "1 - HH_roster.csv", sep="/"))
+
+# specifying columns which are missing from the file in cols_only() causes a warning
+# since I can't do anything about missing columns I've suppressed the warnings here
+roster <- map_dfr(all_files, read_csv, col_types = cols(year = "i",
+                                                        hhcode = "d",
+                                                        idc = "d",
+                                                        sex = "f",
+                                                        age = "d",
+                                                        spouse_idc = "d",
+                                                        province = "c",
+                                                        district = "f",
+                                                        region = "c")) %>% 
+  mutate(year = floor_date(as.Date(as.character(year), format="%Y"), unit = "year"),
+         spouse_idc = as.integer(na_if(na_if(spouse_idc, 98), 99)),
+         region = as_factor(recode(region, 
+                                   rural = "Rural", urban = "Urban")),
+         province = as_factor(recode(province, 
+                                     punjab = "Punjab", sindh = "Sindh", nwfp = "KPK", balochistan = "Balochistan",
+                                     NWFP = "KPK", "khyber pakhtunkhwa" = "KPK", kpk = "KPK", kp = "KPK")),
+         has_spouse = !is.na(spouse_idc),
+         age_group = cut(age, 
+                         breaks = c(0, 12, 19, 30, 60, 100), 
+                         labels = c("Child", "Teenager", "Young Adult", "Adult", "Senior"), 
+                         ordered_result = TRUE, include.lowest = TRUE))
+```
+
+Each individual in the survey is uniquely identified by a triplet of (year, hhcode, idc) where `year` is the year of survey, `hhcode` is household code/ID and `idc` is person ID *within the household*. There are some demographic variables telling age, sex, location of the individual. The `spouse_idc` column contains the ID code of the spouse of the individual (implicit fact: the spouse belongs to the same household). An NA here represents unmarried individuals. 
+
+```{r}
+head(roster)
+```
+
+The survey follows a tick-tock pattern alternating between province and district distributed surveys. However the male/female ratio is pretty consistent around 50% which is to be expected. The majority of population lives in rural areas in Pakistan. 
+
+```{r fig.height=5, fig.width=10}
+
+p1 <- roster %>% 
+  count(year, sex) %>% 
+  ggplot(aes(x = year, y = n, fill = sex)) + 
+  geom_col() + 
+  scale_y_continuous(labels = comma) + 
+  labs(title = "Survey responses over time by Sex") + 
+  xlab("Survey year") + 
+  ylab("Number of individuals")
+
+p2 <- roster %>% 
+  count(year, region) %>%
+  group_by(year) %>% 
+  mutate(pct = n / sum(n)) %>% 
+  ggplot(aes(x = year, y = pct, fill = region)) +
+  geom_col() +
+  scale_y_continuous(labels = percent) +
+  labs(title = "Population over time by Region",
+       subtitle = "Survey sample is assumed to be population here") +
+  xlab("Survey year") +
+  ylab("Percentage of population")
+
+p1 + p2
+```
+
+Since the survey questionnaire changes across years and some questions are not asked there are some columns with significant variations in the available data. This is before considering that even if a question is asked the respondent might not provide/know the answer. 
+
+```{r}
+roster %>% 
+  group_by(year) %>% 
+  summarise_all(~ mean(!is.na(.)))
+```
+
