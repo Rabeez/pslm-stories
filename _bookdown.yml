@@ -1,9 +1,9 @@
 book_filename: "bookdownproj"
 output_dir: docs
 delete_merged_file: true
+new_session: yes
 edit: https://github.com/Rabeez/pslm-stories/edit/master/%s
 view: https://github.com/Rabeez/pslm-stories/blob/master/%s
 language:
   ui:
     chapter_name: "Chapter "
-rmd_files: ["part0-intro/index.Rmd", "part1-survey_sections/02-tears.Rmd", "part1-survey_sections/03-race.Rmd"]
