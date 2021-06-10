@@ -265,23 +265,36 @@ all_files <- map(year_dirs, function(year_dir) paste(year_dir, "4 - Employment.c
 income <- map_dfr(all_files, read_csv, col_types = cols_only(year = "i",
                                                              hhcode = "d",
                                                              idc = "d",
+                                                             province = "c",
+                                                             region = "c",
+                                                             work1_occupation = "c",
+                                                             work1_industry = "c",
                                                              work1_income_last_month = "d",
                                                              work1_months_worked_last_year	 = "d",
                                                              work1_income_last_year = "d",
-                                                             work1_occupation = "c",
-                                                             work1_industry = "c",
-                                                             province = "c",
-                                                             region = "c")) %>% 
+                                                             work2_income_last_year = "d",
+                                                             other_work_income_last_year = "d",
+                                                             in_kind_income = "d",
+                                                             pension_income = "d",
+                                                             remittance_within_pak = "d",
+                                                             remittance_outside_pak = "d",
+                                                             property_rent_recieved = "d",
+                                                             other_income_without_economic_activity = "d")) %>% 
   mutate(year = floor_date(as.Date(as.character(year), format="%Y"), unit = "year"),
          region = as_factor(recode(region, 
                                    rural = "Rural", urban = "Urban")),
          province = as_factor(recode(province, 
                                      punjab = "Punjab", sindh = "Sindh", nwfp = "KPK", balochistan = "Balochistan",
-                                     NWFP = "KPK", "khyber pakhtunkhwa" = "KPK", kpk = "KPK", kp = "KPK")),
+                                     NWFP = "KPK", "khyber pakhtunkhwa" = "KPK", kpk = "KPK", kp = "KPK", gilgit = "Gilgit")),
          work1_income_last_year.calc = work1_income_last_month * work1_income_last_month,
+         work1_income_last_year.combined = pmax(work1_income_last_year, work1_income_last_year.calc),
          work1_occupation = as_factor(str_to_sentence(work1_occupation)),
          work1_industry = as_factor(str_to_sentence(work1_industry))
-         )
+         ) %>% 
+  mutate_if(is.numeric , replace_na, replace = 0) %>% 
+  mutate(total_annual_income = (work1_income_last_year.combined + work2_income_last_year + other_work_income_last_year 
+                                + in_kind_income + pension_income + remittance_within_pak + remittance_outside_pak 
+                                + property_rent_recieved + other_income_without_economic_activity))
 ```
 
 
@@ -290,7 +303,7 @@ head(income)
 ```
 
 ```
-## # A tibble: 6 x 11
+## # A tibble: 6 x 21
 ##   year        hhcode province region   idc work1_occupation     work1_industry  
 ##   <date>       <dbl> <fct>    <fct>  <dbl> <fct>                <fct>           
 ## 1 2004-01-01  1.00e9 Punjab   Urban      1 Service, shop , sal~ Social & person~
@@ -299,33 +312,53 @@ head(income)
 ## 4 2004-01-01  1.00e9 Punjab   Urban      4 <NA>                 <NA>            
 ## 5 2004-01-01  1.00e9 Punjab   Urban      1 Service, shop , sal~ Social & person~
 ## 6 2004-01-01  1.00e9 Punjab   Urban      2 <NA>                 <NA>            
-## # ... with 4 more variables: work1_income_last_month <dbl>,
+## # ... with 14 more variables: work1_income_last_month <dbl>,
 ## #   work1_months_worked_last_year <dbl>, work1_income_last_year <dbl>,
-## #   work1_income_last_year.calc <dbl>
+## #   work2_income_last_year <dbl>, other_work_income_last_year <dbl>,
+## #   in_kind_income <dbl>, pension_income <dbl>, remittance_within_pak <dbl>,
+## #   remittance_outside_pak <dbl>, property_rent_recieved <dbl>,
+## #   other_income_without_economic_activity <dbl>,
+## #   work1_income_last_year.calc <dbl>, work1_income_last_year.combined <dbl>,
+## #   total_annual_income <dbl>
 ```
+
+distribution of total income
 
 
 ```{.r .numberLines}
-plot_categorical <- function(tbl, cat_col, n_levels = 10, 
-                             order_col, order_fun, 
-                             do_agg = FALSE, agg_col = NULL, agg_fun = NULL) {
+income %>% 
+  ggplot(aes(total_annual_income)) + 
+  geom_histogram() + 
+  scale_x_log10(labels = comma)
+```
+
+```
+## Warning: Transformation introduced infinite values in continuous x-axis
+```
+
+```
+## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+```
+
+```
+## Warning: Removed 2982251 rows containing non-finite values (stat_bin).
+```
+
+<img src="p2-01-marriages_files/figure-html/unnamed-chunk-14-1.png" width="672" />
+
+
+
+
+```{.r .numberLines}
+plot_categorical_count <- function(tbl, cat_col, n_levels = 10) {
   result <- tbl %>% 
     filter(!is.na({{ cat_col }})) %>%
-    mutate({{ cat_col }} := fct_lump_n({{ cat_col }}, n_levels),
-           {{ cat_col }} := fct_reorder({{ cat_col }}, {{ order_col }}, .fun = order_fun)) %>%
-    group_by({{ cat_col }}, region)
-  
-  if (do_agg) {
-    print(c("h1", substitute(agg_fun), as.character(enquo(agg_col))))
-    print(result)
-    result <- result %>% summarize(aggregated = agg_fun({{agg_col}}))
-    # print(result)
-  } else {
-    # print(c("h2", agg_col))
-    # This will run for count aggregations only
-    result <- result %>% summarize(aggregated = n())
-  }
-  
+    mutate({{ cat_col }} := fct_lump_n({{ cat_col }}, n_levels)) %>%
+    group_by({{ cat_col }}, region) %>% 
+    summarize(aggregated = n()) %>% 
+    ungroup() %>% 
+    mutate({{ cat_col }} := fct_reorder({{ cat_col }}, aggregated))
+
   result %>% 
     ggplot(aes(aggregated, {{ cat_col }}, fill = region)) +
     geom_col() +
@@ -333,130 +366,67 @@ plot_categorical <- function(tbl, cat_col, n_levels = 10,
 }
 
 income %>% 
-  plot_categorical(work1_occupation, 15, hhcode, length) +
+  plot_categorical_count(work1_occupation, 15) +
   labs(x = "", y = "", title = "Number of people by Occupation")
 ```
 
-<img src="p2-01-marriages_files/figure-html/unnamed-chunk-14-1.png" width="672" />
+<img src="p2-01-marriages_files/figure-html/unnamed-chunk-15-1.png" width="1056" />
 
 ```{.r .numberLines}
 income %>% 
-  plot_categorical(work1_industry, 15, hhcode, length) +
+  plot_categorical_count(work1_industry, 15) +
   labs(x = "", y = "", title = "Number of people by Industry")
 ```
 
-<img src="p2-01-marriages_files/figure-html/unnamed-chunk-14-2.png" width="672" />
+<img src="p2-01-marriages_files/figure-html/unnamed-chunk-15-2.png" width="1056" />
 
 
 ```{.r .numberLines}
+plot_categorical_summary <- function(tbl, cat_col, n_levels = 10, agg_col, agg_fun) {
+  result <- tbl %>% 
+    filter(!is.na({{ cat_col }})) %>%
+    mutate({{ cat_col }} := fct_lump_n({{ cat_col }}, n_levels)) %>%
+    group_by({{ cat_col }}, region) %>% 
+    summarize(aggregated = agg_fun({{ agg_col }})) %>% 
+    ungroup() %>% 
+    mutate({{ cat_col }} := fct_reorder({{ cat_col }}, aggregated))
+
+  result %>% 
+    ggplot(aes(aggregated, {{ cat_col }}, fill = region)) +
+    geom_col() +
+    scale_x_continuous(labels = label_comma())
+}
+
 income %>% 
-  plot_categorical(work1_occupation, 15, work1_income_last_year, median, TRUE, work1_income_last_year, median) +
-  labs(x = "", y = "", title = "Median annual salary by Occupation")
-```
-
-```
-## Warning: Using `as.character()` on a quosure is deprecated as of rlang 0.3.0.
-## Please use `as_label()` or `as_name()` instead.
-## This warning is displayed once per session.
-```
-
-```
-## [[1]]
-## [1] "h1"
-## 
-## [[2]]
-## median
-## 
-## [[3]]
-## [1] "~"
-## 
-## [[4]]
-## [1] "work1_income_last_year"
-## 
-## # A tibble: 1,280,159 x 11
-## # Groups:   work1_occupation, region [32]
-##    year        hhcode province region   idc work1_occupation    work1_industry  
-##    <date>       <dbl> <fct>    <fct>  <dbl> <fct>               <fct>           
-##  1 2004-01-01  1.00e9 Punjab   Urban      1 Service, shop , sa~ Social & person~
-##  2 2004-01-01  1.00e9 Punjab   Urban      2 Service, shop , sa~ Social & person~
-##  3 2004-01-01  1.00e9 Punjab   Urban      1 Service, shop , sa~ Social & person~
-##  4 2004-01-01  1.00e9 Punjab   Urban      1 Other               Social & person~
-##  5 2004-01-01  1.00e9 Punjab   Urban      1 Elementary occupat~ Social & person~
-##  6 2004-01-01  1.00e9 Punjab   Urban      1 Other               Social & person~
-##  7 2004-01-01  1.00e9 Punjab   Urban      8 Other               Social & person~
-##  8 2004-01-01  1.00e9 Punjab   Urban      1 Other               Electricity     
-##  9 2004-01-01  1.00e9 Punjab   Urban      3 Service, shop , sa~ Social & person~
-## 10 2004-01-01  1.00e9 Punjab   Urban      1 Other               Social & person~
-## # ... with 1,280,149 more rows, and 4 more variables:
-## #   work1_income_last_month <dbl>, work1_months_worked_last_year <dbl>,
-## #   work1_income_last_year <dbl>, work1_income_last_year.calc <dbl>
+  plot_categorical_summary(work1_occupation, 15, total_annual_income, mean) +
+  labs(x = "", y = "", title = "Mean annual income by Occupation")
 ```
 
 ```
 ## `summarise()` has grouped output by 'work1_occupation'. You can override using the `.groups` argument.
 ```
 
-```
-## Warning: Removed 32 rows containing missing values (position_stack).
-```
-
-<img src="p2-01-marriages_files/figure-html/unnamed-chunk-15-1.png" width="672" />
+<img src="p2-01-marriages_files/figure-html/unnamed-chunk-16-1.png" width="1056" />
 
 ```{.r .numberLines}
 income %>% 
-  plot_categorical(work1_industry, 15, work1_income_last_year, median, TRUE, work1_income_last_year, median) +
-  labs(x = "", y = "", title = "Median annual salary by Industry")
-```
-
-```
-## [[1]]
-## [1] "h1"
-## 
-## [[2]]
-## median
-## 
-## [[3]]
-## [1] "~"
-## 
-## [[4]]
-## [1] "work1_income_last_year"
-## 
-## # A tibble: 1,280,417 x 11
-## # Groups:   work1_industry, region [32]
-##    year        hhcode province region   idc work1_occupation    work1_industry  
-##    <date>       <dbl> <fct>    <fct>  <dbl> <fct>               <fct>           
-##  1 2004-01-01  1.00e9 Punjab   Urban      1 Service, shop , sa~ Social & person~
-##  2 2004-01-01  1.00e9 Punjab   Urban      2 Service, shop , sa~ Social & person~
-##  3 2004-01-01  1.00e9 Punjab   Urban      1 Service, shop , sa~ Social & person~
-##  4 2004-01-01  1.00e9 Punjab   Urban      1 Professionals       Social & person~
-##  5 2004-01-01  1.00e9 Punjab   Urban      1 Elementary occupat~ Social & person~
-##  6 2004-01-01  1.00e9 Punjab   Urban      1 Professionals       Social & person~
-##  7 2004-01-01  1.00e9 Punjab   Urban      8 Senior officals / ~ Social & person~
-##  8 2004-01-01  1.00e9 Punjab   Urban      1 Clerks              Other           
-##  9 2004-01-01  1.00e9 Punjab   Urban      3 Service, shop , sa~ Social & person~
-## 10 2004-01-01  1.00e9 Punjab   Urban      1 Clerks              Social & person~
-## # ... with 1,280,407 more rows, and 4 more variables:
-## #   work1_income_last_month <dbl>, work1_months_worked_last_year <dbl>,
-## #   work1_income_last_year <dbl>, work1_income_last_year.calc <dbl>
+  plot_categorical_summary(work1_industry, 15, total_annual_income, mean) +
+  labs(x = "", y = "", title = "Mean annual income by Industry")
 ```
 
 ```
 ## `summarise()` has grouped output by 'work1_industry'. You can override using the `.groups` argument.
 ```
 
-```
-## Warning: Removed 32 rows containing missing values (position_stack).
-```
-
-<img src="p2-01-marriages_files/figure-html/unnamed-chunk-15-2.png" width="672" />
+<img src="p2-01-marriages_files/figure-html/unnamed-chunk-16-2.png" width="1056" />
 
 income over time
 
 
 ```{.r .numberLines}
 income %>% 
-  filter(!is.na(work1_income_last_year)) %>% 
-  ggplot(aes(x = year, y = work1_income_last_year, group = interaction(year, region), fill = region)) + 
+  filter(!is.na(total_annual_income)) %>% 
+  ggplot(aes(x = year, y = total_annual_income, group = interaction(year, region), fill = region)) + 
   geom_boxplot() + 
   scale_y_log10(labels = label_comma()) + 
   labs(x = "", y = "Annual Income (PKR)")
@@ -467,17 +437,17 @@ income %>%
 ```
 
 ```
-## Warning: Removed 514542 rows containing non-finite values (stat_boxplot).
+## Warning: Removed 2982251 rows containing non-finite values (stat_boxplot).
 ```
 
-<img src="p2-01-marriages_files/figure-html/unnamed-chunk-16-1.png" width="672" />
+<img src="p2-01-marriages_files/figure-html/unnamed-chunk-17-1.png" width="672" />
 
 income over time married/unmarried by sex
 
 
 ```{.r .numberLines}
 roster_enriched <- roster %>% 
-  left_join(income %>% select(year,hhcode,idc,work1_income_last_year,work1_occupation,work1_industry),by = c("year","hhcode","idc"))
+  left_join(income %>% select(year,hhcode,idc,total_annual_income,work1_occupation,work1_industry),by = c("year","hhcode","idc"))
 
 head(roster_enriched)
 ```
@@ -493,7 +463,7 @@ head(roster_enriched)
 ## 5 2004-01-01 1001300212 Punjab   islamabad Urban      2 male     70         NA
 ## 6 2004-01-01 1001300308 Punjab   islamabad Urban      3 male     40         NA
 ## # ... with 5 more variables: has_spouse <lgl>, age_group <ord>,
-## #   work1_income_last_year <dbl>, work1_occupation <fct>, work1_industry <fct>
+## #   total_annual_income <dbl>, work1_occupation <fct>, work1_industry <fct>
 ```
 
 There is a slight bimodal pattern in the income distribution. 
@@ -501,8 +471,8 @@ There is a slight bimodal pattern in the income distribution.
 
 ```{.r .numberLines}
 roster_enriched %>%
-  ggplot(aes(work1_income_last_year)) + 
-  geom_histogram() + 
+  ggplot(aes(total_annual_income, fill = region)) + 
+  geom_histogram(position = "identity", alpha = 0.5) + 
   scale_x_log10(labels = comma)
 ```
 
@@ -515,20 +485,20 @@ roster_enriched %>%
 ```
 
 ```
-## Warning: Removed 4250222 rows containing non-finite values (stat_bin).
+## Warning: Removed 4281976 rows containing non-finite values (stat_bin).
 ```
 
-<img src="p2-01-marriages_files/figure-html/unnamed-chunk-18-1.png" width="672" />
+<img src="p2-01-marriages_files/figure-html/unnamed-chunk-19-1.png" width="672" />
 
 effect of age and marriage on income. The second mode is significantly stronger in unmarried rural people. 
 
 
 ```{.r .numberLines}
 roster_enriched %>% 
-  filter(!is.na(work1_income_last_year), work1_income_last_year > 0,
+  filter(!is.na(total_annual_income), total_annual_income > 0,
          !is.na(age)) %>% 
-  ggplot(aes(x = age, y = work1_income_last_year, color = has_spouse)) + 
-  geom_mark_ellipse(aes(filter = between(work1_income_last_year, 50, 1000) & between(age, 20, 80)), 
+  ggplot(aes(x = age, y = total_annual_income, color = has_spouse)) + 
+  geom_mark_ellipse(aes(filter = between(total_annual_income, 50, 1000) & between(age, 20, 80)), 
                     color = "black") +
   geom_point(alpha = 0.1) + 
   scale_y_log10(labels = label_comma()) +
@@ -537,17 +507,17 @@ roster_enriched %>%
   labs(x = "Age", y = "Annual Income (PKR)", color = "Married?")
 ```
 
-<img src="p2-01-marriages_files/figure-html/unnamed-chunk-19-1.png" width="960" />
+<img src="p2-01-marriages_files/figure-html/unnamed-chunk-20-1.png" width="960" />
 
 Looking at different dimensions men are the majority of the second mode. 
 
 
 ```{.r .numberLines}
 roster_enriched %>% 
-  filter(!is.na(work1_income_last_year), work1_income_last_year > 0,
+  filter(!is.na(total_annual_income), total_annual_income > 0,
          !is.na(age)) %>% 
-  ggplot(aes(x = age, y = work1_income_last_year, color = has_spouse)) + 
-  geom_mark_ellipse(aes(filter = between(work1_income_last_year, 50, 1000) & between(age, 20, 80)), 
+  ggplot(aes(x = age, y = total_annual_income, color = has_spouse)) + 
+  geom_mark_ellipse(aes(filter = between(total_annual_income, 50, 1000) & between(age, 20, 80)), 
                     color = "black") +
   geom_point(alpha = 0.1) + 
   scale_y_log10(labels = label_comma()) +
@@ -556,20 +526,20 @@ roster_enriched %>%
   labs(x = "Age", y = "Annual Income (PKR)", color = "Married?")
 ```
 
-<img src="p2-01-marriages_files/figure-html/unnamed-chunk-20-1.png" width="960" />
+<img src="p2-01-marriages_files/figure-html/unnamed-chunk-21-1.png" width="960" />
 
 Looking at the most common industries the second mode is basically only present in agriculture. 
 
 
 ```{.r .numberLines}
 roster_enriched %>% 
-  filter(!is.na(work1_income_last_year), work1_income_last_year > 0,
+  filter(!is.na(total_annual_income), total_annual_income > 0,
          !is.na(age),
          !has_spouse, sex == "male", !is.na(work1_industry),
          region == "Rural") %>% 
   mutate(work1_industry = fct_lump_n(work1_industry, 8)) %>% 
-  ggplot(aes(x = age, y = work1_income_last_year, color = work1_industry)) + 
-  geom_mark_ellipse(aes(filter = between(work1_income_last_year, 50, 1000) & between(age, 20, 80)), 
+  ggplot(aes(x = age, y = total_annual_income, color = work1_industry)) + 
+  geom_mark_ellipse(aes(filter = between(total_annual_income, 50, 1000) & between(age, 20, 80)), 
                     color = "black") +
   geom_point(alpha = 0.1) + 
   scale_y_log10(labels = label_comma()) +
@@ -579,7 +549,7 @@ roster_enriched %>%
   labs(x = "Age", y = "Annual Income (PKR)")
 ```
 
-<img src="p2-01-marriages_files/figure-html/unnamed-chunk-21-1.png" width="960" />
+<img src="p2-01-marriages_files/figure-html/unnamed-chunk-22-1.png" width="960" />
 
 Within agriculture basically only 1 occupation is responsible for the mode. 
 
@@ -588,13 +558,13 @@ There is a trend in agricultural communities for workers to be paid in form of r
 
 ```{.r .numberLines}
 roster_enriched %>% 
-  filter(!is.na(work1_income_last_year), work1_income_last_year > 0,
+  filter(!is.na(total_annual_income), total_annual_income > 0,
          !is.na(age),
          !has_spouse, sex == "male", !is.na(work1_industry),
          region == "Rural", work1_industry == "Agriculture, forestry, fishing") %>% 
   mutate(work1_occupation = fct_lump_n(work1_occupation, 8)) %>% 
-  ggplot(aes(x = age, y = work1_income_last_year, color = work1_occupation)) + 
-  geom_mark_ellipse(aes(filter = between(work1_income_last_year, 50, 1000) & between(age, 20, 80)), 
+  ggplot(aes(x = age, y = total_annual_income, color = work1_occupation)) + 
+  geom_mark_ellipse(aes(filter = between(total_annual_income, 50, 1000) & between(age, 20, 80)), 
                     color = "black") +
   geom_point(alpha = 0.1) + 
   scale_y_log10(labels = label_comma()) +
@@ -604,15 +574,36 @@ roster_enriched %>%
   labs(x = "Age", y = "Annual Income (PKR)")
 ```
 
-<img src="p2-01-marriages_files/figure-html/unnamed-chunk-22-1.png" width="960" />
+<img src="p2-01-marriages_files/figure-html/unnamed-chunk-23-1.png" width="960" />
+
+
+```{.r .numberLines}
+roster_enriched %>% 
+  filter(!is.na(total_annual_income), total_annual_income > 0,
+         !is.na(age),
+         !has_spouse, sex == "male", !is.na(work1_industry),
+         region == "Rural", work1_industry == "Other") %>% 
+  mutate(work1_occupation = fct_lump_n(work1_occupation, 8)) %>% 
+  ggplot(aes(x = age, y = total_annual_income, color = work1_occupation)) + 
+  geom_mark_ellipse(aes(filter = between(total_annual_income, 50, 1000) & between(age, 20, 80)), 
+                    color = "black") +
+  geom_point(alpha = 0.1) + 
+  scale_y_log10(labels = label_comma()) +
+  theme(legend.position = "none") + 
+  # guides(color = guide_legend(override.aes = list(alpha = 1))) + 
+  facet_wrap(~work1_occupation) +
+  labs(x = "Age", y = "Annual Income (PKR)")
+```
+
+<img src="p2-01-marriages_files/figure-html/unnamed-chunk-24-1.png" width="960" />
 
 It appears the effect of marraige on income is reversed for men and women. (TODO: check this using a model)
 
 
 ```{.r .numberLines}
 roster_enriched %>% 
-  filter(!is.na(work1_income_last_year)) %>% 
-  ggplot(aes(x = year, y = work1_income_last_year, group = interaction(year, has_spouse), fill = has_spouse)) + 
+  filter(!is.na(total_annual_income)) %>% 
+  ggplot(aes(x = year, y = total_annual_income, group = interaction(year, has_spouse), fill = has_spouse)) + 
   geom_boxplot() + 
   scale_y_log10(labels = label_comma()) + 
   facet_wrap(~sex) + 
@@ -624,19 +615,19 @@ roster_enriched %>%
 ```
 
 ```
-## Warning: Removed 514490 rows containing non-finite values (stat_boxplot).
+## Warning: Removed 2981689 rows containing non-finite values (stat_boxplot).
 ```
 
-<img src="p2-01-marriages_files/figure-html/unnamed-chunk-23-1.png" width="672" />
+<img src="p2-01-marriages_files/figure-html/unnamed-chunk-25-1.png" width="960" />
 
 income of couples
 
 
 ```{.r .numberLines}
 couples_enriched <- couples %>% 
-  left_join(income %>% select(year,hhcode,idc,work1_income_last_year) %>% rename(annual_income.husband = work1_income_last_year),
+  left_join(income %>% select(year,hhcode,idc,total_annual_income) %>% rename(annual_income.husband = total_annual_income),
             by = c("year", "hhcode", "idc.husband" = "idc")) %>% 
-  left_join(income %>% select(year,hhcode,idc,work1_income_last_year) %>% rename(annual_income.wife = work1_income_last_year),
+  left_join(income %>% select(year,hhcode,idc,total_annual_income) %>% rename(annual_income.wife = total_annual_income),
             by = c("year", "hhcode", "idc.wife" = "idc")) %>% 
   mutate(annual_income_gap = annual_income.husband - annual_income.wife,
          is_earning.husband = (annual_income.husband > 0) & (!is.na(annual_income.husband)),
@@ -687,7 +678,7 @@ couples_enriched %>%
   labs(x = "", y = "Percentage of couples", title = "Who earns in a marriage?", color = "")
 ```
 
-<img src="p2-01-marriages_files/figure-html/unnamed-chunk-25-1.png" width="672" />
+<img src="p2-01-marriages_files/figure-html/unnamed-chunk-27-1.png" width="672" />
 
 dist of income gap
 
@@ -713,10 +704,10 @@ couples_enriched %>%
 ```
 
 ```
-## Warning: Removed 482283 rows containing non-finite values (stat_bin).
+## Warning: Removed 394887 rows containing non-finite values (stat_bin).
 ```
 
-<img src="p2-01-marriages_files/figure-html/unnamed-chunk-26-1.png" width="672" />
+<img src="p2-01-marriages_files/figure-html/unnamed-chunk-28-1.png" width="672" />
 
 couple correlation
 
@@ -745,10 +736,10 @@ ggplot(aes(x = annual_income.husband, y = annual_income.wife)) +
 ```
 
 ```
-## Warning: Removed 467262 rows containing missing values (geom_point).
+## Warning: Removed 533 rows containing missing values (geom_point).
 ```
 
-<img src="p2-01-marriages_files/figure-html/unnamed-chunk-27-1.png" width="960" />
+<img src="p2-01-marriages_files/figure-html/unnamed-chunk-29-1.png" width="960" />
 
 correlation of income gap with age gap
 
@@ -758,8 +749,8 @@ couples_enriched %>%
   # filter(who_earns != "Neither") %>%
   filter(who_earns == "Both") %>%
   mutate(ag.h = ntile(age.husband, 4), 
-         ag.w = ntile(age.wife, 4)) %>% 
-ggplot(aes(x = age_gap, y = annual_income_gap, color = region)) + 
+         ag.w = ntile(age.wife, 4)) %>%
+  ggplot(aes(x = age_gap, y = annual_income_gap, color = region)) + 
   geom_point(alpha = 0.1) +
   # geom_smooth() + 
   # scale_color_manual(values = c("#C3C3C3", "#198D8D")) + 
@@ -782,8 +773,8 @@ ggplot(aes(x = age_gap, y = annual_income_gap, color = region)) +
 ```
 
 ```
-## Warning: Removed 726 rows containing missing values (geom_point).
+## Warning: Removed 1146 rows containing missing values (geom_point).
 ```
 
-<img src="p2-01-marriages_files/figure-html/unnamed-chunk-28-1.png" width="672" />
+<img src="p2-01-marriages_files/figure-html/unnamed-chunk-30-1.png" width="672" />
 

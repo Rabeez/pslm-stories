@@ -364,25 +364,38 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb47-5"><a href="marriages-in-pakistan.html#cb47-5"></a>income <span class="ot">&lt;-</span> <span class="fu">map_dfr</span>(all_files, read_csv, <span class="at">col_types =</span> <span class="fu">cols_only</span>(<span class="at">year =</span> <span class="st">&quot;i&quot;</span>,</span>
 <span id="cb47-6"><a href="marriages-in-pakistan.html#cb47-6"></a>                                                             <span class="at">hhcode =</span> <span class="st">&quot;d&quot;</span>,</span>
 <span id="cb47-7"><a href="marriages-in-pakistan.html#cb47-7"></a>                                                             <span class="at">idc =</span> <span class="st">&quot;d&quot;</span>,</span>
-<span id="cb47-8"><a href="marriages-in-pakistan.html#cb47-8"></a>                                                             <span class="at">work1_income_last_month =</span> <span class="st">&quot;d&quot;</span>,</span>
-<span id="cb47-9"><a href="marriages-in-pakistan.html#cb47-9"></a>                                                             <span class="at">work1_months_worked_last_year   =</span> <span class="st">&quot;d&quot;</span>,</span>
-<span id="cb47-10"><a href="marriages-in-pakistan.html#cb47-10"></a>                                                             <span class="at">work1_income_last_year =</span> <span class="st">&quot;d&quot;</span>,</span>
-<span id="cb47-11"><a href="marriages-in-pakistan.html#cb47-11"></a>                                                             <span class="at">work1_occupation =</span> <span class="st">&quot;c&quot;</span>,</span>
-<span id="cb47-12"><a href="marriages-in-pakistan.html#cb47-12"></a>                                                             <span class="at">work1_industry =</span> <span class="st">&quot;c&quot;</span>,</span>
-<span id="cb47-13"><a href="marriages-in-pakistan.html#cb47-13"></a>                                                             <span class="at">province =</span> <span class="st">&quot;c&quot;</span>,</span>
-<span id="cb47-14"><a href="marriages-in-pakistan.html#cb47-14"></a>                                                             <span class="at">region =</span> <span class="st">&quot;c&quot;</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb47-15"><a href="marriages-in-pakistan.html#cb47-15"></a>  <span class="fu">mutate</span>(<span class="at">year =</span> <span class="fu">floor_date</span>(<span class="fu">as.Date</span>(<span class="fu">as.character</span>(year), <span class="at">format=</span><span class="st">&quot;%Y&quot;</span>), <span class="at">unit =</span> <span class="st">&quot;year&quot;</span>),</span>
-<span id="cb47-16"><a href="marriages-in-pakistan.html#cb47-16"></a>         <span class="at">region =</span> <span class="fu">as_factor</span>(<span class="fu">recode</span>(region, </span>
-<span id="cb47-17"><a href="marriages-in-pakistan.html#cb47-17"></a>                                   <span class="at">rural =</span> <span class="st">&quot;Rural&quot;</span>, <span class="at">urban =</span> <span class="st">&quot;Urban&quot;</span>)),</span>
-<span id="cb47-18"><a href="marriages-in-pakistan.html#cb47-18"></a>         <span class="at">province =</span> <span class="fu">as_factor</span>(<span class="fu">recode</span>(province, </span>
-<span id="cb47-19"><a href="marriages-in-pakistan.html#cb47-19"></a>                                     <span class="at">punjab =</span> <span class="st">&quot;Punjab&quot;</span>, <span class="at">sindh =</span> <span class="st">&quot;Sindh&quot;</span>, <span class="at">nwfp =</span> <span class="st">&quot;KPK&quot;</span>, <span class="at">balochistan =</span> <span class="st">&quot;Balochistan&quot;</span>,</span>
-<span id="cb47-20"><a href="marriages-in-pakistan.html#cb47-20"></a>                                     <span class="at">NWFP =</span> <span class="st">&quot;KPK&quot;</span>, <span class="st">&quot;khyber pakhtunkhwa&quot;</span> <span class="ot">=</span> <span class="st">&quot;KPK&quot;</span>, <span class="at">kpk =</span> <span class="st">&quot;KPK&quot;</span>, <span class="at">kp =</span> <span class="st">&quot;KPK&quot;</span>)),</span>
-<span id="cb47-21"><a href="marriages-in-pakistan.html#cb47-21"></a>         <span class="at">work1_income_last_year.calc =</span> work1_income_last_month <span class="sc">*</span> work1_income_last_month,</span>
-<span id="cb47-22"><a href="marriages-in-pakistan.html#cb47-22"></a>         <span class="at">work1_occupation =</span> <span class="fu">as_factor</span>(<span class="fu">str_to_sentence</span>(work1_occupation)),</span>
-<span id="cb47-23"><a href="marriages-in-pakistan.html#cb47-23"></a>         <span class="at">work1_industry =</span> <span class="fu">as_factor</span>(<span class="fu">str_to_sentence</span>(work1_industry))</span>
-<span id="cb47-24"><a href="marriages-in-pakistan.html#cb47-24"></a>         )</span></code></pre></div>
+<span id="cb47-8"><a href="marriages-in-pakistan.html#cb47-8"></a>                                                             <span class="at">province =</span> <span class="st">&quot;c&quot;</span>,</span>
+<span id="cb47-9"><a href="marriages-in-pakistan.html#cb47-9"></a>                                                             <span class="at">region =</span> <span class="st">&quot;c&quot;</span>,</span>
+<span id="cb47-10"><a href="marriages-in-pakistan.html#cb47-10"></a>                                                             <span class="at">work1_occupation =</span> <span class="st">&quot;c&quot;</span>,</span>
+<span id="cb47-11"><a href="marriages-in-pakistan.html#cb47-11"></a>                                                             <span class="at">work1_industry =</span> <span class="st">&quot;c&quot;</span>,</span>
+<span id="cb47-12"><a href="marriages-in-pakistan.html#cb47-12"></a>                                                             <span class="at">work1_income_last_month =</span> <span class="st">&quot;d&quot;</span>,</span>
+<span id="cb47-13"><a href="marriages-in-pakistan.html#cb47-13"></a>                                                             <span class="at">work1_months_worked_last_year   =</span> <span class="st">&quot;d&quot;</span>,</span>
+<span id="cb47-14"><a href="marriages-in-pakistan.html#cb47-14"></a>                                                             <span class="at">work1_income_last_year =</span> <span class="st">&quot;d&quot;</span>,</span>
+<span id="cb47-15"><a href="marriages-in-pakistan.html#cb47-15"></a>                                                             <span class="at">work2_income_last_year =</span> <span class="st">&quot;d&quot;</span>,</span>
+<span id="cb47-16"><a href="marriages-in-pakistan.html#cb47-16"></a>                                                             <span class="at">other_work_income_last_year =</span> <span class="st">&quot;d&quot;</span>,</span>
+<span id="cb47-17"><a href="marriages-in-pakistan.html#cb47-17"></a>                                                             <span class="at">in_kind_income =</span> <span class="st">&quot;d&quot;</span>,</span>
+<span id="cb47-18"><a href="marriages-in-pakistan.html#cb47-18"></a>                                                             <span class="at">pension_income =</span> <span class="st">&quot;d&quot;</span>,</span>
+<span id="cb47-19"><a href="marriages-in-pakistan.html#cb47-19"></a>                                                             <span class="at">remittance_within_pak =</span> <span class="st">&quot;d&quot;</span>,</span>
+<span id="cb47-20"><a href="marriages-in-pakistan.html#cb47-20"></a>                                                             <span class="at">remittance_outside_pak =</span> <span class="st">&quot;d&quot;</span>,</span>
+<span id="cb47-21"><a href="marriages-in-pakistan.html#cb47-21"></a>                                                             <span class="at">property_rent_recieved =</span> <span class="st">&quot;d&quot;</span>,</span>
+<span id="cb47-22"><a href="marriages-in-pakistan.html#cb47-22"></a>                                                             <span class="at">other_income_without_economic_activity =</span> <span class="st">&quot;d&quot;</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb47-23"><a href="marriages-in-pakistan.html#cb47-23"></a>  <span class="fu">mutate</span>(<span class="at">year =</span> <span class="fu">floor_date</span>(<span class="fu">as.Date</span>(<span class="fu">as.character</span>(year), <span class="at">format=</span><span class="st">&quot;%Y&quot;</span>), <span class="at">unit =</span> <span class="st">&quot;year&quot;</span>),</span>
+<span id="cb47-24"><a href="marriages-in-pakistan.html#cb47-24"></a>         <span class="at">region =</span> <span class="fu">as_factor</span>(<span class="fu">recode</span>(region, </span>
+<span id="cb47-25"><a href="marriages-in-pakistan.html#cb47-25"></a>                                   <span class="at">rural =</span> <span class="st">&quot;Rural&quot;</span>, <span class="at">urban =</span> <span class="st">&quot;Urban&quot;</span>)),</span>
+<span id="cb47-26"><a href="marriages-in-pakistan.html#cb47-26"></a>         <span class="at">province =</span> <span class="fu">as_factor</span>(<span class="fu">recode</span>(province, </span>
+<span id="cb47-27"><a href="marriages-in-pakistan.html#cb47-27"></a>                                     <span class="at">punjab =</span> <span class="st">&quot;Punjab&quot;</span>, <span class="at">sindh =</span> <span class="st">&quot;Sindh&quot;</span>, <span class="at">nwfp =</span> <span class="st">&quot;KPK&quot;</span>, <span class="at">balochistan =</span> <span class="st">&quot;Balochistan&quot;</span>,</span>
+<span id="cb47-28"><a href="marriages-in-pakistan.html#cb47-28"></a>                                     <span class="at">NWFP =</span> <span class="st">&quot;KPK&quot;</span>, <span class="st">&quot;khyber pakhtunkhwa&quot;</span> <span class="ot">=</span> <span class="st">&quot;KPK&quot;</span>, <span class="at">kpk =</span> <span class="st">&quot;KPK&quot;</span>, <span class="at">kp =</span> <span class="st">&quot;KPK&quot;</span>, <span class="at">gilgit =</span> <span class="st">&quot;Gilgit&quot;</span>)),</span>
+<span id="cb47-29"><a href="marriages-in-pakistan.html#cb47-29"></a>         <span class="at">work1_income_last_year.calc =</span> work1_income_last_month <span class="sc">*</span> work1_income_last_month,</span>
+<span id="cb47-30"><a href="marriages-in-pakistan.html#cb47-30"></a>         <span class="at">work1_income_last_year.combined =</span> <span class="fu">pmax</span>(work1_income_last_year, work1_income_last_year.calc),</span>
+<span id="cb47-31"><a href="marriages-in-pakistan.html#cb47-31"></a>         <span class="at">work1_occupation =</span> <span class="fu">as_factor</span>(<span class="fu">str_to_sentence</span>(work1_occupation)),</span>
+<span id="cb47-32"><a href="marriages-in-pakistan.html#cb47-32"></a>         <span class="at">work1_industry =</span> <span class="fu">as_factor</span>(<span class="fu">str_to_sentence</span>(work1_industry))</span>
+<span id="cb47-33"><a href="marriages-in-pakistan.html#cb47-33"></a>         ) <span class="sc">%&gt;%</span> </span>
+<span id="cb47-34"><a href="marriages-in-pakistan.html#cb47-34"></a>  <span class="fu">mutate_if</span>(is.numeric , replace_na, <span class="at">replace =</span> <span class="dv">0</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb47-35"><a href="marriages-in-pakistan.html#cb47-35"></a>  <span class="fu">mutate</span>(<span class="at">total_annual_income =</span> (work1_income_last_year.combined <span class="sc">+</span> work2_income_last_year <span class="sc">+</span> other_work_income_last_year </span>
+<span id="cb47-36"><a href="marriages-in-pakistan.html#cb47-36"></a>                                <span class="sc">+</span> in_kind_income <span class="sc">+</span> pension_income <span class="sc">+</span> remittance_within_pak <span class="sc">+</span> remittance_outside_pak </span>
+<span id="cb47-37"><a href="marriages-in-pakistan.html#cb47-37"></a>                                <span class="sc">+</span> property_rent_recieved <span class="sc">+</span> other_income_without_economic_activity))</span></code></pre></div>
 <div class="sourceCode" id="cb48"><pre class="sourceCode numberSource r numberLines"><code class="sourceCode r"><span id="cb48-1"><a href="marriages-in-pakistan.html#cb48-1"></a><span class="fu">head</span>(income)</span></code></pre></div>
-<pre><code>## # A tibble: 6 x 11
+<pre><code>## # A tibble: 6 x 21
 ##   year        hhcode province region   idc work1_occupation     work1_industry  
 ##   &lt;date&gt;       &lt;dbl&gt; &lt;fct&gt;    &lt;fct&gt;  &lt;dbl&gt; &lt;fct&gt;                &lt;fct&gt;           
 ## 1 2004-01-01  1.00e9 Punjab   Urban      1 Service, shop , sal~ Social &amp; person~
@@ -391,131 +404,86 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## 4 2004-01-01  1.00e9 Punjab   Urban      4 &lt;NA&gt;                 &lt;NA&gt;            
 ## 5 2004-01-01  1.00e9 Punjab   Urban      1 Service, shop , sal~ Social &amp; person~
 ## 6 2004-01-01  1.00e9 Punjab   Urban      2 &lt;NA&gt;                 &lt;NA&gt;            
-## # ... with 4 more variables: work1_income_last_month &lt;dbl&gt;,
+## # ... with 14 more variables: work1_income_last_month &lt;dbl&gt;,
 ## #   work1_months_worked_last_year &lt;dbl&gt;, work1_income_last_year &lt;dbl&gt;,
-## #   work1_income_last_year.calc &lt;dbl&gt;</code></pre>
-<div class="sourceCode" id="cb50"><pre class="sourceCode numberSource r numberLines"><code class="sourceCode r"><span id="cb50-1"><a href="marriages-in-pakistan.html#cb50-1"></a>plot_categorical <span class="ot">&lt;-</span> <span class="cf">function</span>(tbl, cat_col, <span class="at">n_levels =</span> <span class="dv">10</span>, </span>
-<span id="cb50-2"><a href="marriages-in-pakistan.html#cb50-2"></a>                             order_col, order_fun, </span>
-<span id="cb50-3"><a href="marriages-in-pakistan.html#cb50-3"></a>                             <span class="at">do_agg =</span> <span class="cn">FALSE</span>, <span class="at">agg_col =</span> <span class="cn">NULL</span>, <span class="at">agg_fun =</span> <span class="cn">NULL</span>) {</span>
-<span id="cb50-4"><a href="marriages-in-pakistan.html#cb50-4"></a>  result <span class="ot">&lt;-</span> tbl <span class="sc">%&gt;%</span> </span>
-<span id="cb50-5"><a href="marriages-in-pakistan.html#cb50-5"></a>    <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>({{ cat_col }})) <span class="sc">%&gt;%</span></span>
-<span id="cb50-6"><a href="marriages-in-pakistan.html#cb50-6"></a>    <span class="fu">mutate</span>({{ cat_col }} <span class="sc">:</span><span class="er">=</span> <span class="fu">fct_lump_n</span>({{ cat_col }}, n_levels),</span>
-<span id="cb50-7"><a href="marriages-in-pakistan.html#cb50-7"></a>           {{ cat_col }} <span class="sc">:</span><span class="er">=</span> <span class="fu">fct_reorder</span>({{ cat_col }}, {{ order_col }}, <span class="at">.fun =</span> order_fun)) <span class="sc">%&gt;%</span></span>
-<span id="cb50-8"><a href="marriages-in-pakistan.html#cb50-8"></a>    <span class="fu">group_by</span>({{ cat_col }}, region)</span>
-<span id="cb50-9"><a href="marriages-in-pakistan.html#cb50-9"></a>  </span>
-<span id="cb50-10"><a href="marriages-in-pakistan.html#cb50-10"></a>  <span class="cf">if</span> (do_agg) {</span>
-<span id="cb50-11"><a href="marriages-in-pakistan.html#cb50-11"></a>    <span class="fu">print</span>(<span class="fu">c</span>(<span class="st">&quot;h1&quot;</span>, <span class="fu">substitute</span>(agg_fun), <span class="fu">as.character</span>(<span class="fu">enquo</span>(agg_col))))</span>
-<span id="cb50-12"><a href="marriages-in-pakistan.html#cb50-12"></a>    <span class="fu">print</span>(result)</span>
-<span id="cb50-13"><a href="marriages-in-pakistan.html#cb50-13"></a>    result <span class="ot">&lt;-</span> result <span class="sc">%&gt;%</span> <span class="fu">summarize</span>(<span class="at">aggregated =</span> <span class="fu">agg_fun</span>({{agg_col}}))</span>
-<span id="cb50-14"><a href="marriages-in-pakistan.html#cb50-14"></a>    <span class="co"># print(result)</span></span>
-<span id="cb50-15"><a href="marriages-in-pakistan.html#cb50-15"></a>  } <span class="cf">else</span> {</span>
-<span id="cb50-16"><a href="marriages-in-pakistan.html#cb50-16"></a>    <span class="co"># print(c(&quot;h2&quot;, agg_col))</span></span>
-<span id="cb50-17"><a href="marriages-in-pakistan.html#cb50-17"></a>    <span class="co"># This will run for count aggregations only</span></span>
-<span id="cb50-18"><a href="marriages-in-pakistan.html#cb50-18"></a>    result <span class="ot">&lt;-</span> result <span class="sc">%&gt;%</span> <span class="fu">summarize</span>(<span class="at">aggregated =</span> <span class="fu">n</span>())</span>
-<span id="cb50-19"><a href="marriages-in-pakistan.html#cb50-19"></a>  }</span>
-<span id="cb50-20"><a href="marriages-in-pakistan.html#cb50-20"></a>  </span>
-<span id="cb50-21"><a href="marriages-in-pakistan.html#cb50-21"></a>  result <span class="sc">%&gt;%</span> </span>
-<span id="cb50-22"><a href="marriages-in-pakistan.html#cb50-22"></a>    <span class="fu">ggplot</span>(<span class="fu">aes</span>(aggregated, {{ cat_col }}, <span class="at">fill =</span> region)) <span class="sc">+</span></span>
-<span id="cb50-23"><a href="marriages-in-pakistan.html#cb50-23"></a>    <span class="fu">geom_col</span>() <span class="sc">+</span></span>
-<span id="cb50-24"><a href="marriages-in-pakistan.html#cb50-24"></a>    <span class="fu">scale_x_continuous</span>(<span class="at">labels =</span> <span class="fu">label_comma</span>())</span>
-<span id="cb50-25"><a href="marriages-in-pakistan.html#cb50-25"></a>}</span>
-<span id="cb50-26"><a href="marriages-in-pakistan.html#cb50-26"></a></span>
-<span id="cb50-27"><a href="marriages-in-pakistan.html#cb50-27"></a>income <span class="sc">%&gt;%</span> </span>
-<span id="cb50-28"><a href="marriages-in-pakistan.html#cb50-28"></a>  <span class="fu">plot_categorical</span>(work1_occupation, <span class="dv">15</span>, hhcode, length) <span class="sc">+</span></span>
-<span id="cb50-29"><a href="marriages-in-pakistan.html#cb50-29"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;&quot;</span>, <span class="at">y =</span> <span class="st">&quot;&quot;</span>, <span class="at">title =</span> <span class="st">&quot;Number of people by Occupation&quot;</span>)</span></code></pre></div>
+## #   work2_income_last_year &lt;dbl&gt;, other_work_income_last_year &lt;dbl&gt;,
+## #   in_kind_income &lt;dbl&gt;, pension_income &lt;dbl&gt;, remittance_within_pak &lt;dbl&gt;,
+## #   remittance_outside_pak &lt;dbl&gt;, property_rent_recieved &lt;dbl&gt;,
+## #   other_income_without_economic_activity &lt;dbl&gt;,
+## #   work1_income_last_year.calc &lt;dbl&gt;, work1_income_last_year.combined &lt;dbl&gt;,
+## #   total_annual_income &lt;dbl&gt;</code></pre>
+<p>distribution of total income</p>
+<div class="sourceCode" id="cb50"><pre class="sourceCode numberSource r numberLines"><code class="sourceCode r"><span id="cb50-1"><a href="marriages-in-pakistan.html#cb50-1"></a>income <span class="sc">%&gt;%</span> </span>
+<span id="cb50-2"><a href="marriages-in-pakistan.html#cb50-2"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(total_annual_income)) <span class="sc">+</span> </span>
+<span id="cb50-3"><a href="marriages-in-pakistan.html#cb50-3"></a>  <span class="fu">geom_histogram</span>() <span class="sc">+</span> </span>
+<span id="cb50-4"><a href="marriages-in-pakistan.html#cb50-4"></a>  <span class="fu">scale_x_log10</span>(<span class="at">labels =</span> comma)</span></code></pre></div>
+<pre><code>## Warning: Transformation introduced infinite values in continuous x-axis</code></pre>
+<pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+<pre><code>## Warning: Removed 2982251 rows containing non-finite values (stat_bin).</code></pre>
 <p><img src="p2-01-marriages_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
-<div class="sourceCode" id="cb51"><pre class="sourceCode numberSource r numberLines"><code class="sourceCode r"><span id="cb51-1"><a href="marriages-in-pakistan.html#cb51-1"></a>income <span class="sc">%&gt;%</span> </span>
-<span id="cb51-2"><a href="marriages-in-pakistan.html#cb51-2"></a>  <span class="fu">plot_categorical</span>(work1_industry, <span class="dv">15</span>, hhcode, length) <span class="sc">+</span></span>
-<span id="cb51-3"><a href="marriages-in-pakistan.html#cb51-3"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;&quot;</span>, <span class="at">y =</span> <span class="st">&quot;&quot;</span>, <span class="at">title =</span> <span class="st">&quot;Number of people by Industry&quot;</span>)</span></code></pre></div>
-<p><img src="p2-01-marriages_files/figure-html/unnamed-chunk-14-2.png" width="672" /></p>
-<div class="sourceCode" id="cb52"><pre class="sourceCode numberSource r numberLines"><code class="sourceCode r"><span id="cb52-1"><a href="marriages-in-pakistan.html#cb52-1"></a>income <span class="sc">%&gt;%</span> </span>
-<span id="cb52-2"><a href="marriages-in-pakistan.html#cb52-2"></a>  <span class="fu">plot_categorical</span>(work1_occupation, <span class="dv">15</span>, work1_income_last_year, median, <span class="cn">TRUE</span>, work1_income_last_year, median) <span class="sc">+</span></span>
-<span id="cb52-3"><a href="marriages-in-pakistan.html#cb52-3"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;&quot;</span>, <span class="at">y =</span> <span class="st">&quot;&quot;</span>, <span class="at">title =</span> <span class="st">&quot;Median annual salary by Occupation&quot;</span>)</span></code></pre></div>
-<pre><code>## Warning: Using `as.character()` on a quosure is deprecated as of rlang 0.3.0.
-## Please use `as_label()` or `as_name()` instead.
-## This warning is displayed once per session.</code></pre>
-<pre><code>## [[1]]
-## [1] &quot;h1&quot;
-## 
-## [[2]]
-## median
-## 
-## [[3]]
-## [1] &quot;~&quot;
-## 
-## [[4]]
-## [1] &quot;work1_income_last_year&quot;
-## 
-## # A tibble: 1,280,159 x 11
-## # Groups:   work1_occupation, region [32]
-##    year        hhcode province region   idc work1_occupation    work1_industry  
-##    &lt;date&gt;       &lt;dbl&gt; &lt;fct&gt;    &lt;fct&gt;  &lt;dbl&gt; &lt;fct&gt;               &lt;fct&gt;           
-##  1 2004-01-01  1.00e9 Punjab   Urban      1 Service, shop , sa~ Social &amp; person~
-##  2 2004-01-01  1.00e9 Punjab   Urban      2 Service, shop , sa~ Social &amp; person~
-##  3 2004-01-01  1.00e9 Punjab   Urban      1 Service, shop , sa~ Social &amp; person~
-##  4 2004-01-01  1.00e9 Punjab   Urban      1 Other               Social &amp; person~
-##  5 2004-01-01  1.00e9 Punjab   Urban      1 Elementary occupat~ Social &amp; person~
-##  6 2004-01-01  1.00e9 Punjab   Urban      1 Other               Social &amp; person~
-##  7 2004-01-01  1.00e9 Punjab   Urban      8 Other               Social &amp; person~
-##  8 2004-01-01  1.00e9 Punjab   Urban      1 Other               Electricity     
-##  9 2004-01-01  1.00e9 Punjab   Urban      3 Service, shop , sa~ Social &amp; person~
-## 10 2004-01-01  1.00e9 Punjab   Urban      1 Other               Social &amp; person~
-## # ... with 1,280,149 more rows, and 4 more variables:
-## #   work1_income_last_month &lt;dbl&gt;, work1_months_worked_last_year &lt;dbl&gt;,
-## #   work1_income_last_year &lt;dbl&gt;, work1_income_last_year.calc &lt;dbl&gt;</code></pre>
+<div class="sourceCode" id="cb54"><pre class="sourceCode numberSource r numberLines"><code class="sourceCode r"><span id="cb54-1"><a href="marriages-in-pakistan.html#cb54-1"></a>plot_categorical_count <span class="ot">&lt;-</span> <span class="cf">function</span>(tbl, cat_col, <span class="at">n_levels =</span> <span class="dv">10</span>) {</span>
+<span id="cb54-2"><a href="marriages-in-pakistan.html#cb54-2"></a>  result <span class="ot">&lt;-</span> tbl <span class="sc">%&gt;%</span> </span>
+<span id="cb54-3"><a href="marriages-in-pakistan.html#cb54-3"></a>    <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>({{ cat_col }})) <span class="sc">%&gt;%</span></span>
+<span id="cb54-4"><a href="marriages-in-pakistan.html#cb54-4"></a>    <span class="fu">mutate</span>({{ cat_col }} <span class="sc">:</span><span class="er">=</span> <span class="fu">fct_lump_n</span>({{ cat_col }}, n_levels)) <span class="sc">%&gt;%</span></span>
+<span id="cb54-5"><a href="marriages-in-pakistan.html#cb54-5"></a>    <span class="fu">group_by</span>({{ cat_col }}, region) <span class="sc">%&gt;%</span> </span>
+<span id="cb54-6"><a href="marriages-in-pakistan.html#cb54-6"></a>    <span class="fu">summarize</span>(<span class="at">aggregated =</span> <span class="fu">n</span>()) <span class="sc">%&gt;%</span> </span>
+<span id="cb54-7"><a href="marriages-in-pakistan.html#cb54-7"></a>    <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb54-8"><a href="marriages-in-pakistan.html#cb54-8"></a>    <span class="fu">mutate</span>({{ cat_col }} <span class="sc">:</span><span class="er">=</span> <span class="fu">fct_reorder</span>({{ cat_col }}, aggregated))</span>
+<span id="cb54-9"><a href="marriages-in-pakistan.html#cb54-9"></a></span>
+<span id="cb54-10"><a href="marriages-in-pakistan.html#cb54-10"></a>  result <span class="sc">%&gt;%</span> </span>
+<span id="cb54-11"><a href="marriages-in-pakistan.html#cb54-11"></a>    <span class="fu">ggplot</span>(<span class="fu">aes</span>(aggregated, {{ cat_col }}, <span class="at">fill =</span> region)) <span class="sc">+</span></span>
+<span id="cb54-12"><a href="marriages-in-pakistan.html#cb54-12"></a>    <span class="fu">geom_col</span>() <span class="sc">+</span></span>
+<span id="cb54-13"><a href="marriages-in-pakistan.html#cb54-13"></a>    <span class="fu">scale_x_continuous</span>(<span class="at">labels =</span> <span class="fu">label_comma</span>())</span>
+<span id="cb54-14"><a href="marriages-in-pakistan.html#cb54-14"></a>}</span>
+<span id="cb54-15"><a href="marriages-in-pakistan.html#cb54-15"></a></span>
+<span id="cb54-16"><a href="marriages-in-pakistan.html#cb54-16"></a>income <span class="sc">%&gt;%</span> </span>
+<span id="cb54-17"><a href="marriages-in-pakistan.html#cb54-17"></a>  <span class="fu">plot_categorical_count</span>(work1_occupation, <span class="dv">15</span>) <span class="sc">+</span></span>
+<span id="cb54-18"><a href="marriages-in-pakistan.html#cb54-18"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;&quot;</span>, <span class="at">y =</span> <span class="st">&quot;&quot;</span>, <span class="at">title =</span> <span class="st">&quot;Number of people by Occupation&quot;</span>)</span></code></pre></div>
+<p><img src="p2-01-marriages_files/figure-html/unnamed-chunk-15-1.png" width="1056" /></p>
+<div class="sourceCode" id="cb55"><pre class="sourceCode numberSource r numberLines"><code class="sourceCode r"><span id="cb55-1"><a href="marriages-in-pakistan.html#cb55-1"></a>income <span class="sc">%&gt;%</span> </span>
+<span id="cb55-2"><a href="marriages-in-pakistan.html#cb55-2"></a>  <span class="fu">plot_categorical_count</span>(work1_industry, <span class="dv">15</span>) <span class="sc">+</span></span>
+<span id="cb55-3"><a href="marriages-in-pakistan.html#cb55-3"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;&quot;</span>, <span class="at">y =</span> <span class="st">&quot;&quot;</span>, <span class="at">title =</span> <span class="st">&quot;Number of people by Industry&quot;</span>)</span></code></pre></div>
+<p><img src="p2-01-marriages_files/figure-html/unnamed-chunk-15-2.png" width="1056" /></p>
+<div class="sourceCode" id="cb56"><pre class="sourceCode numberSource r numberLines"><code class="sourceCode r"><span id="cb56-1"><a href="marriages-in-pakistan.html#cb56-1"></a>plot_categorical_summary <span class="ot">&lt;-</span> <span class="cf">function</span>(tbl, cat_col, <span class="at">n_levels =</span> <span class="dv">10</span>, agg_col, agg_fun) {</span>
+<span id="cb56-2"><a href="marriages-in-pakistan.html#cb56-2"></a>  result <span class="ot">&lt;-</span> tbl <span class="sc">%&gt;%</span> </span>
+<span id="cb56-3"><a href="marriages-in-pakistan.html#cb56-3"></a>    <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>({{ cat_col }})) <span class="sc">%&gt;%</span></span>
+<span id="cb56-4"><a href="marriages-in-pakistan.html#cb56-4"></a>    <span class="fu">mutate</span>({{ cat_col }} <span class="sc">:</span><span class="er">=</span> <span class="fu">fct_lump_n</span>({{ cat_col }}, n_levels)) <span class="sc">%&gt;%</span></span>
+<span id="cb56-5"><a href="marriages-in-pakistan.html#cb56-5"></a>    <span class="fu">group_by</span>({{ cat_col }}, region) <span class="sc">%&gt;%</span> </span>
+<span id="cb56-6"><a href="marriages-in-pakistan.html#cb56-6"></a>    <span class="fu">summarize</span>(<span class="at">aggregated =</span> <span class="fu">agg_fun</span>({{ agg_col }})) <span class="sc">%&gt;%</span> </span>
+<span id="cb56-7"><a href="marriages-in-pakistan.html#cb56-7"></a>    <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb56-8"><a href="marriages-in-pakistan.html#cb56-8"></a>    <span class="fu">mutate</span>({{ cat_col }} <span class="sc">:</span><span class="er">=</span> <span class="fu">fct_reorder</span>({{ cat_col }}, aggregated))</span>
+<span id="cb56-9"><a href="marriages-in-pakistan.html#cb56-9"></a></span>
+<span id="cb56-10"><a href="marriages-in-pakistan.html#cb56-10"></a>  result <span class="sc">%&gt;%</span> </span>
+<span id="cb56-11"><a href="marriages-in-pakistan.html#cb56-11"></a>    <span class="fu">ggplot</span>(<span class="fu">aes</span>(aggregated, {{ cat_col }}, <span class="at">fill =</span> region)) <span class="sc">+</span></span>
+<span id="cb56-12"><a href="marriages-in-pakistan.html#cb56-12"></a>    <span class="fu">geom_col</span>() <span class="sc">+</span></span>
+<span id="cb56-13"><a href="marriages-in-pakistan.html#cb56-13"></a>    <span class="fu">scale_x_continuous</span>(<span class="at">labels =</span> <span class="fu">label_comma</span>())</span>
+<span id="cb56-14"><a href="marriages-in-pakistan.html#cb56-14"></a>}</span>
+<span id="cb56-15"><a href="marriages-in-pakistan.html#cb56-15"></a></span>
+<span id="cb56-16"><a href="marriages-in-pakistan.html#cb56-16"></a>income <span class="sc">%&gt;%</span> </span>
+<span id="cb56-17"><a href="marriages-in-pakistan.html#cb56-17"></a>  <span class="fu">plot_categorical_summary</span>(work1_occupation, <span class="dv">15</span>, total_annual_income, mean) <span class="sc">+</span></span>
+<span id="cb56-18"><a href="marriages-in-pakistan.html#cb56-18"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;&quot;</span>, <span class="at">y =</span> <span class="st">&quot;&quot;</span>, <span class="at">title =</span> <span class="st">&quot;Mean annual income by Occupation&quot;</span>)</span></code></pre></div>
 <pre><code>## `summarise()` has grouped output by &#39;work1_occupation&#39;. You can override using the `.groups` argument.</code></pre>
-<pre><code>## Warning: Removed 32 rows containing missing values (position_stack).</code></pre>
-<p><img src="p2-01-marriages_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
-<div class="sourceCode" id="cb57"><pre class="sourceCode numberSource r numberLines"><code class="sourceCode r"><span id="cb57-1"><a href="marriages-in-pakistan.html#cb57-1"></a>income <span class="sc">%&gt;%</span> </span>
-<span id="cb57-2"><a href="marriages-in-pakistan.html#cb57-2"></a>  <span class="fu">plot_categorical</span>(work1_industry, <span class="dv">15</span>, work1_income_last_year, median, <span class="cn">TRUE</span>, work1_income_last_year, median) <span class="sc">+</span></span>
-<span id="cb57-3"><a href="marriages-in-pakistan.html#cb57-3"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;&quot;</span>, <span class="at">y =</span> <span class="st">&quot;&quot;</span>, <span class="at">title =</span> <span class="st">&quot;Median annual salary by Industry&quot;</span>)</span></code></pre></div>
-<pre><code>## [[1]]
-## [1] &quot;h1&quot;
-## 
-## [[2]]
-## median
-## 
-## [[3]]
-## [1] &quot;~&quot;
-## 
-## [[4]]
-## [1] &quot;work1_income_last_year&quot;
-## 
-## # A tibble: 1,280,417 x 11
-## # Groups:   work1_industry, region [32]
-##    year        hhcode province region   idc work1_occupation    work1_industry  
-##    &lt;date&gt;       &lt;dbl&gt; &lt;fct&gt;    &lt;fct&gt;  &lt;dbl&gt; &lt;fct&gt;               &lt;fct&gt;           
-##  1 2004-01-01  1.00e9 Punjab   Urban      1 Service, shop , sa~ Social &amp; person~
-##  2 2004-01-01  1.00e9 Punjab   Urban      2 Service, shop , sa~ Social &amp; person~
-##  3 2004-01-01  1.00e9 Punjab   Urban      1 Service, shop , sa~ Social &amp; person~
-##  4 2004-01-01  1.00e9 Punjab   Urban      1 Professionals       Social &amp; person~
-##  5 2004-01-01  1.00e9 Punjab   Urban      1 Elementary occupat~ Social &amp; person~
-##  6 2004-01-01  1.00e9 Punjab   Urban      1 Professionals       Social &amp; person~
-##  7 2004-01-01  1.00e9 Punjab   Urban      8 Senior officals / ~ Social &amp; person~
-##  8 2004-01-01  1.00e9 Punjab   Urban      1 Clerks              Other           
-##  9 2004-01-01  1.00e9 Punjab   Urban      3 Service, shop , sa~ Social &amp; person~
-## 10 2004-01-01  1.00e9 Punjab   Urban      1 Clerks              Social &amp; person~
-## # ... with 1,280,407 more rows, and 4 more variables:
-## #   work1_income_last_month &lt;dbl&gt;, work1_months_worked_last_year &lt;dbl&gt;,
-## #   work1_income_last_year &lt;dbl&gt;, work1_income_last_year.calc &lt;dbl&gt;</code></pre>
+<p><img src="p2-01-marriages_files/figure-html/unnamed-chunk-16-1.png" width="1056" /></p>
+<div class="sourceCode" id="cb58"><pre class="sourceCode numberSource r numberLines"><code class="sourceCode r"><span id="cb58-1"><a href="marriages-in-pakistan.html#cb58-1"></a>income <span class="sc">%&gt;%</span> </span>
+<span id="cb58-2"><a href="marriages-in-pakistan.html#cb58-2"></a>  <span class="fu">plot_categorical_summary</span>(work1_industry, <span class="dv">15</span>, total_annual_income, mean) <span class="sc">+</span></span>
+<span id="cb58-3"><a href="marriages-in-pakistan.html#cb58-3"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;&quot;</span>, <span class="at">y =</span> <span class="st">&quot;&quot;</span>, <span class="at">title =</span> <span class="st">&quot;Mean annual income by Industry&quot;</span>)</span></code></pre></div>
 <pre><code>## `summarise()` has grouped output by &#39;work1_industry&#39;. You can override using the `.groups` argument.</code></pre>
-<pre><code>## Warning: Removed 32 rows containing missing values (position_stack).</code></pre>
-<p><img src="p2-01-marriages_files/figure-html/unnamed-chunk-15-2.png" width="672" /></p>
+<p><img src="p2-01-marriages_files/figure-html/unnamed-chunk-16-2.png" width="1056" /></p>
 <p>income over time</p>
-<div class="sourceCode" id="cb61"><pre class="sourceCode numberSource r numberLines"><code class="sourceCode r"><span id="cb61-1"><a href="marriages-in-pakistan.html#cb61-1"></a>income <span class="sc">%&gt;%</span> </span>
-<span id="cb61-2"><a href="marriages-in-pakistan.html#cb61-2"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(work1_income_last_year)) <span class="sc">%&gt;%</span> </span>
-<span id="cb61-3"><a href="marriages-in-pakistan.html#cb61-3"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> year, <span class="at">y =</span> work1_income_last_year, <span class="at">group =</span> <span class="fu">interaction</span>(year, region), <span class="at">fill =</span> region)) <span class="sc">+</span> </span>
-<span id="cb61-4"><a href="marriages-in-pakistan.html#cb61-4"></a>  <span class="fu">geom_boxplot</span>() <span class="sc">+</span> </span>
-<span id="cb61-5"><a href="marriages-in-pakistan.html#cb61-5"></a>  <span class="fu">scale_y_log10</span>(<span class="at">labels =</span> <span class="fu">label_comma</span>()) <span class="sc">+</span> </span>
-<span id="cb61-6"><a href="marriages-in-pakistan.html#cb61-6"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Annual Income (PKR)&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb60"><pre class="sourceCode numberSource r numberLines"><code class="sourceCode r"><span id="cb60-1"><a href="marriages-in-pakistan.html#cb60-1"></a>income <span class="sc">%&gt;%</span> </span>
+<span id="cb60-2"><a href="marriages-in-pakistan.html#cb60-2"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(total_annual_income)) <span class="sc">%&gt;%</span> </span>
+<span id="cb60-3"><a href="marriages-in-pakistan.html#cb60-3"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> year, <span class="at">y =</span> total_annual_income, <span class="at">group =</span> <span class="fu">interaction</span>(year, region), <span class="at">fill =</span> region)) <span class="sc">+</span> </span>
+<span id="cb60-4"><a href="marriages-in-pakistan.html#cb60-4"></a>  <span class="fu">geom_boxplot</span>() <span class="sc">+</span> </span>
+<span id="cb60-5"><a href="marriages-in-pakistan.html#cb60-5"></a>  <span class="fu">scale_y_log10</span>(<span class="at">labels =</span> <span class="fu">label_comma</span>()) <span class="sc">+</span> </span>
+<span id="cb60-6"><a href="marriages-in-pakistan.html#cb60-6"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Annual Income (PKR)&quot;</span>)</span></code></pre></div>
 <pre><code>## Warning: Transformation introduced infinite values in continuous y-axis</code></pre>
-<pre><code>## Warning: Removed 514542 rows containing non-finite values (stat_boxplot).</code></pre>
-<p><img src="p2-01-marriages_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
+<pre><code>## Warning: Removed 2982251 rows containing non-finite values (stat_boxplot).</code></pre>
+<p><img src="p2-01-marriages_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
 <p>income over time married/unmarried by sex</p>
-<div class="sourceCode" id="cb64"><pre class="sourceCode numberSource r numberLines"><code class="sourceCode r"><span id="cb64-1"><a href="marriages-in-pakistan.html#cb64-1"></a>roster_enriched <span class="ot">&lt;-</span> roster <span class="sc">%&gt;%</span> </span>
-<span id="cb64-2"><a href="marriages-in-pakistan.html#cb64-2"></a>  <span class="fu">left_join</span>(income <span class="sc">%&gt;%</span> <span class="fu">select</span>(year,hhcode,idc,work1_income_last_year,work1_occupation,work1_industry),<span class="at">by =</span> <span class="fu">c</span>(<span class="st">&quot;year&quot;</span>,<span class="st">&quot;hhcode&quot;</span>,<span class="st">&quot;idc&quot;</span>))</span>
-<span id="cb64-3"><a href="marriages-in-pakistan.html#cb64-3"></a></span>
-<span id="cb64-4"><a href="marriages-in-pakistan.html#cb64-4"></a><span class="fu">head</span>(roster_enriched)</span></code></pre></div>
+<div class="sourceCode" id="cb63"><pre class="sourceCode numberSource r numberLines"><code class="sourceCode r"><span id="cb63-1"><a href="marriages-in-pakistan.html#cb63-1"></a>roster_enriched <span class="ot">&lt;-</span> roster <span class="sc">%&gt;%</span> </span>
+<span id="cb63-2"><a href="marriages-in-pakistan.html#cb63-2"></a>  <span class="fu">left_join</span>(income <span class="sc">%&gt;%</span> <span class="fu">select</span>(year,hhcode,idc,total_annual_income,work1_occupation,work1_industry),<span class="at">by =</span> <span class="fu">c</span>(<span class="st">&quot;year&quot;</span>,<span class="st">&quot;hhcode&quot;</span>,<span class="st">&quot;idc&quot;</span>))</span>
+<span id="cb63-3"><a href="marriages-in-pakistan.html#cb63-3"></a></span>
+<span id="cb63-4"><a href="marriages-in-pakistan.html#cb63-4"></a><span class="fu">head</span>(roster_enriched)</span></code></pre></div>
 <pre><code>## # A tibble: 6 x 14
 ##   year           hhcode province district  region   idc sex     age spouse_idc
 ##   &lt;date&gt;          &lt;dbl&gt; &lt;fct&gt;    &lt;fct&gt;     &lt;fct&gt;  &lt;dbl&gt; &lt;fct&gt; &lt;dbl&gt;      &lt;int&gt;
@@ -526,69 +494,85 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## 5 2004-01-01 1001300212 Punjab   islamabad Urban      2 male     70         NA
 ## 6 2004-01-01 1001300308 Punjab   islamabad Urban      3 male     40         NA
 ## # ... with 5 more variables: has_spouse &lt;lgl&gt;, age_group &lt;ord&gt;,
-## #   work1_income_last_year &lt;dbl&gt;, work1_occupation &lt;fct&gt;, work1_industry &lt;fct&gt;</code></pre>
+## #   total_annual_income &lt;dbl&gt;, work1_occupation &lt;fct&gt;, work1_industry &lt;fct&gt;</code></pre>
 <p>There is a slight bimodal pattern in the income distribution.</p>
-<div class="sourceCode" id="cb66"><pre class="sourceCode numberSource r numberLines"><code class="sourceCode r"><span id="cb66-1"><a href="marriages-in-pakistan.html#cb66-1"></a>roster_enriched <span class="sc">%&gt;%</span></span>
-<span id="cb66-2"><a href="marriages-in-pakistan.html#cb66-2"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(work1_income_last_year)) <span class="sc">+</span> </span>
-<span id="cb66-3"><a href="marriages-in-pakistan.html#cb66-3"></a>  <span class="fu">geom_histogram</span>() <span class="sc">+</span> </span>
-<span id="cb66-4"><a href="marriages-in-pakistan.html#cb66-4"></a>  <span class="fu">scale_x_log10</span>(<span class="at">labels =</span> comma)</span></code></pre></div>
+<div class="sourceCode" id="cb65"><pre class="sourceCode numberSource r numberLines"><code class="sourceCode r"><span id="cb65-1"><a href="marriages-in-pakistan.html#cb65-1"></a>roster_enriched <span class="sc">%&gt;%</span></span>
+<span id="cb65-2"><a href="marriages-in-pakistan.html#cb65-2"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(total_annual_income, <span class="at">fill =</span> region)) <span class="sc">+</span> </span>
+<span id="cb65-3"><a href="marriages-in-pakistan.html#cb65-3"></a>  <span class="fu">geom_histogram</span>(<span class="at">position =</span> <span class="st">&quot;identity&quot;</span>, <span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span> </span>
+<span id="cb65-4"><a href="marriages-in-pakistan.html#cb65-4"></a>  <span class="fu">scale_x_log10</span>(<span class="at">labels =</span> comma)</span></code></pre></div>
 <pre><code>## Warning: Transformation introduced infinite values in continuous x-axis</code></pre>
 <pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
-<pre><code>## Warning: Removed 4250222 rows containing non-finite values (stat_bin).</code></pre>
-<p><img src="p2-01-marriages_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
+<pre><code>## Warning: Removed 4281976 rows containing non-finite values (stat_bin).</code></pre>
+<p><img src="p2-01-marriages_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
 <p>effect of age and marriage on income. The second mode is significantly stronger in unmarried rural people.</p>
+<div class="sourceCode" id="cb69"><pre class="sourceCode numberSource r numberLines"><code class="sourceCode r"><span id="cb69-1"><a href="marriages-in-pakistan.html#cb69-1"></a>roster_enriched <span class="sc">%&gt;%</span> </span>
+<span id="cb69-2"><a href="marriages-in-pakistan.html#cb69-2"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(total_annual_income), total_annual_income <span class="sc">&gt;</span> <span class="dv">0</span>,</span>
+<span id="cb69-3"><a href="marriages-in-pakistan.html#cb69-3"></a>         <span class="sc">!</span><span class="fu">is.na</span>(age)) <span class="sc">%&gt;%</span> </span>
+<span id="cb69-4"><a href="marriages-in-pakistan.html#cb69-4"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> age, <span class="at">y =</span> total_annual_income, <span class="at">color =</span> has_spouse)) <span class="sc">+</span> </span>
+<span id="cb69-5"><a href="marriages-in-pakistan.html#cb69-5"></a>  <span class="fu">geom_mark_ellipse</span>(<span class="fu">aes</span>(<span class="at">filter =</span> <span class="fu">between</span>(total_annual_income, <span class="dv">50</span>, <span class="dv">1000</span>) <span class="sc">&amp;</span> <span class="fu">between</span>(age, <span class="dv">20</span>, <span class="dv">80</span>)), </span>
+<span id="cb69-6"><a href="marriages-in-pakistan.html#cb69-6"></a>                    <span class="at">color =</span> <span class="st">&quot;black&quot;</span>) <span class="sc">+</span></span>
+<span id="cb69-7"><a href="marriages-in-pakistan.html#cb69-7"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.1</span>) <span class="sc">+</span> </span>
+<span id="cb69-8"><a href="marriages-in-pakistan.html#cb69-8"></a>  <span class="fu">scale_y_log10</span>(<span class="at">labels =</span> <span class="fu">label_comma</span>()) <span class="sc">+</span></span>
+<span id="cb69-9"><a href="marriages-in-pakistan.html#cb69-9"></a>  <span class="fu">guides</span>(<span class="at">color =</span> <span class="fu">guide_legend</span>(<span class="at">override.aes =</span> <span class="fu">list</span>(<span class="at">alpha =</span> <span class="dv">1</span>))) <span class="sc">+</span> </span>
+<span id="cb69-10"><a href="marriages-in-pakistan.html#cb69-10"></a>  <span class="fu">facet_grid</span>(has_spouse <span class="sc">~</span> region) <span class="sc">+</span></span>
+<span id="cb69-11"><a href="marriages-in-pakistan.html#cb69-11"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Age&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Annual Income (PKR)&quot;</span>, <span class="at">color =</span> <span class="st">&quot;Married?&quot;</span>)</span></code></pre></div>
+<p><img src="p2-01-marriages_files/figure-html/unnamed-chunk-20-1.png" width="960" /></p>
+<p>Looking at different dimensions men are the majority of the second mode.</p>
 <div class="sourceCode" id="cb70"><pre class="sourceCode numberSource r numberLines"><code class="sourceCode r"><span id="cb70-1"><a href="marriages-in-pakistan.html#cb70-1"></a>roster_enriched <span class="sc">%&gt;%</span> </span>
-<span id="cb70-2"><a href="marriages-in-pakistan.html#cb70-2"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(work1_income_last_year), work1_income_last_year <span class="sc">&gt;</span> <span class="dv">0</span>,</span>
+<span id="cb70-2"><a href="marriages-in-pakistan.html#cb70-2"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(total_annual_income), total_annual_income <span class="sc">&gt;</span> <span class="dv">0</span>,</span>
 <span id="cb70-3"><a href="marriages-in-pakistan.html#cb70-3"></a>         <span class="sc">!</span><span class="fu">is.na</span>(age)) <span class="sc">%&gt;%</span> </span>
-<span id="cb70-4"><a href="marriages-in-pakistan.html#cb70-4"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> age, <span class="at">y =</span> work1_income_last_year, <span class="at">color =</span> has_spouse)) <span class="sc">+</span> </span>
-<span id="cb70-5"><a href="marriages-in-pakistan.html#cb70-5"></a>  <span class="fu">geom_mark_ellipse</span>(<span class="fu">aes</span>(<span class="at">filter =</span> <span class="fu">between</span>(work1_income_last_year, <span class="dv">50</span>, <span class="dv">1000</span>) <span class="sc">&amp;</span> <span class="fu">between</span>(age, <span class="dv">20</span>, <span class="dv">80</span>)), </span>
+<span id="cb70-4"><a href="marriages-in-pakistan.html#cb70-4"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> age, <span class="at">y =</span> total_annual_income, <span class="at">color =</span> has_spouse)) <span class="sc">+</span> </span>
+<span id="cb70-5"><a href="marriages-in-pakistan.html#cb70-5"></a>  <span class="fu">geom_mark_ellipse</span>(<span class="fu">aes</span>(<span class="at">filter =</span> <span class="fu">between</span>(total_annual_income, <span class="dv">50</span>, <span class="dv">1000</span>) <span class="sc">&amp;</span> <span class="fu">between</span>(age, <span class="dv">20</span>, <span class="dv">80</span>)), </span>
 <span id="cb70-6"><a href="marriages-in-pakistan.html#cb70-6"></a>                    <span class="at">color =</span> <span class="st">&quot;black&quot;</span>) <span class="sc">+</span></span>
 <span id="cb70-7"><a href="marriages-in-pakistan.html#cb70-7"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.1</span>) <span class="sc">+</span> </span>
 <span id="cb70-8"><a href="marriages-in-pakistan.html#cb70-8"></a>  <span class="fu">scale_y_log10</span>(<span class="at">labels =</span> <span class="fu">label_comma</span>()) <span class="sc">+</span></span>
 <span id="cb70-9"><a href="marriages-in-pakistan.html#cb70-9"></a>  <span class="fu">guides</span>(<span class="at">color =</span> <span class="fu">guide_legend</span>(<span class="at">override.aes =</span> <span class="fu">list</span>(<span class="at">alpha =</span> <span class="dv">1</span>))) <span class="sc">+</span> </span>
-<span id="cb70-10"><a href="marriages-in-pakistan.html#cb70-10"></a>  <span class="fu">facet_grid</span>(has_spouse <span class="sc">~</span> region) <span class="sc">+</span></span>
+<span id="cb70-10"><a href="marriages-in-pakistan.html#cb70-10"></a>  <span class="fu">facet_grid</span>(has_spouse <span class="sc">~</span> sex) <span class="sc">+</span></span>
 <span id="cb70-11"><a href="marriages-in-pakistan.html#cb70-11"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Age&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Annual Income (PKR)&quot;</span>, <span class="at">color =</span> <span class="st">&quot;Married?&quot;</span>)</span></code></pre></div>
-<p><img src="p2-01-marriages_files/figure-html/unnamed-chunk-19-1.png" width="960" /></p>
-<p>Looking at different dimensions men are the majority of the second mode.</p>
-<div class="sourceCode" id="cb71"><pre class="sourceCode numberSource r numberLines"><code class="sourceCode r"><span id="cb71-1"><a href="marriages-in-pakistan.html#cb71-1"></a>roster_enriched <span class="sc">%&gt;%</span> </span>
-<span id="cb71-2"><a href="marriages-in-pakistan.html#cb71-2"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(work1_income_last_year), work1_income_last_year <span class="sc">&gt;</span> <span class="dv">0</span>,</span>
-<span id="cb71-3"><a href="marriages-in-pakistan.html#cb71-3"></a>         <span class="sc">!</span><span class="fu">is.na</span>(age)) <span class="sc">%&gt;%</span> </span>
-<span id="cb71-4"><a href="marriages-in-pakistan.html#cb71-4"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> age, <span class="at">y =</span> work1_income_last_year, <span class="at">color =</span> has_spouse)) <span class="sc">+</span> </span>
-<span id="cb71-5"><a href="marriages-in-pakistan.html#cb71-5"></a>  <span class="fu">geom_mark_ellipse</span>(<span class="fu">aes</span>(<span class="at">filter =</span> <span class="fu">between</span>(work1_income_last_year, <span class="dv">50</span>, <span class="dv">1000</span>) <span class="sc">&amp;</span> <span class="fu">between</span>(age, <span class="dv">20</span>, <span class="dv">80</span>)), </span>
-<span id="cb71-6"><a href="marriages-in-pakistan.html#cb71-6"></a>                    <span class="at">color =</span> <span class="st">&quot;black&quot;</span>) <span class="sc">+</span></span>
-<span id="cb71-7"><a href="marriages-in-pakistan.html#cb71-7"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.1</span>) <span class="sc">+</span> </span>
-<span id="cb71-8"><a href="marriages-in-pakistan.html#cb71-8"></a>  <span class="fu">scale_y_log10</span>(<span class="at">labels =</span> <span class="fu">label_comma</span>()) <span class="sc">+</span></span>
-<span id="cb71-9"><a href="marriages-in-pakistan.html#cb71-9"></a>  <span class="fu">guides</span>(<span class="at">color =</span> <span class="fu">guide_legend</span>(<span class="at">override.aes =</span> <span class="fu">list</span>(<span class="at">alpha =</span> <span class="dv">1</span>))) <span class="sc">+</span> </span>
-<span id="cb71-10"><a href="marriages-in-pakistan.html#cb71-10"></a>  <span class="fu">facet_grid</span>(has_spouse <span class="sc">~</span> sex) <span class="sc">+</span></span>
-<span id="cb71-11"><a href="marriages-in-pakistan.html#cb71-11"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Age&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Annual Income (PKR)&quot;</span>, <span class="at">color =</span> <span class="st">&quot;Married?&quot;</span>)</span></code></pre></div>
-<p><img src="p2-01-marriages_files/figure-html/unnamed-chunk-20-1.png" width="960" /></p>
+<p><img src="p2-01-marriages_files/figure-html/unnamed-chunk-21-1.png" width="960" /></p>
 <p>Looking at the most common industries the second mode is basically only present in agriculture.</p>
+<div class="sourceCode" id="cb71"><pre class="sourceCode numberSource r numberLines"><code class="sourceCode r"><span id="cb71-1"><a href="marriages-in-pakistan.html#cb71-1"></a>roster_enriched <span class="sc">%&gt;%</span> </span>
+<span id="cb71-2"><a href="marriages-in-pakistan.html#cb71-2"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(total_annual_income), total_annual_income <span class="sc">&gt;</span> <span class="dv">0</span>,</span>
+<span id="cb71-3"><a href="marriages-in-pakistan.html#cb71-3"></a>         <span class="sc">!</span><span class="fu">is.na</span>(age),</span>
+<span id="cb71-4"><a href="marriages-in-pakistan.html#cb71-4"></a>         <span class="sc">!</span>has_spouse, sex <span class="sc">==</span> <span class="st">&quot;male&quot;</span>, <span class="sc">!</span><span class="fu">is.na</span>(work1_industry),</span>
+<span id="cb71-5"><a href="marriages-in-pakistan.html#cb71-5"></a>         region <span class="sc">==</span> <span class="st">&quot;Rural&quot;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb71-6"><a href="marriages-in-pakistan.html#cb71-6"></a>  <span class="fu">mutate</span>(<span class="at">work1_industry =</span> <span class="fu">fct_lump_n</span>(work1_industry, <span class="dv">8</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb71-7"><a href="marriages-in-pakistan.html#cb71-7"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> age, <span class="at">y =</span> total_annual_income, <span class="at">color =</span> work1_industry)) <span class="sc">+</span> </span>
+<span id="cb71-8"><a href="marriages-in-pakistan.html#cb71-8"></a>  <span class="fu">geom_mark_ellipse</span>(<span class="fu">aes</span>(<span class="at">filter =</span> <span class="fu">between</span>(total_annual_income, <span class="dv">50</span>, <span class="dv">1000</span>) <span class="sc">&amp;</span> <span class="fu">between</span>(age, <span class="dv">20</span>, <span class="dv">80</span>)), </span>
+<span id="cb71-9"><a href="marriages-in-pakistan.html#cb71-9"></a>                    <span class="at">color =</span> <span class="st">&quot;black&quot;</span>) <span class="sc">+</span></span>
+<span id="cb71-10"><a href="marriages-in-pakistan.html#cb71-10"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.1</span>) <span class="sc">+</span> </span>
+<span id="cb71-11"><a href="marriages-in-pakistan.html#cb71-11"></a>  <span class="fu">scale_y_log10</span>(<span class="at">labels =</span> <span class="fu">label_comma</span>()) <span class="sc">+</span></span>
+<span id="cb71-12"><a href="marriages-in-pakistan.html#cb71-12"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb71-13"><a href="marriages-in-pakistan.html#cb71-13"></a>  <span class="co"># guides(color = guide_legend(override.aes = list(alpha = 1))) + </span></span>
+<span id="cb71-14"><a href="marriages-in-pakistan.html#cb71-14"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>work1_industry) <span class="sc">+</span></span>
+<span id="cb71-15"><a href="marriages-in-pakistan.html#cb71-15"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Age&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Annual Income (PKR)&quot;</span>)</span></code></pre></div>
+<p><img src="p2-01-marriages_files/figure-html/unnamed-chunk-22-1.png" width="960" /></p>
+<p>Within agriculture basically only 1 occupation is responsible for the mode.</p>
+<p>There is a trend in agricultural communities for workers to be paid in form of room and board instead of cash. If I had loaded the other payment types then I could have verified this hypothesis.</p>
 <div class="sourceCode" id="cb72"><pre class="sourceCode numberSource r numberLines"><code class="sourceCode r"><span id="cb72-1"><a href="marriages-in-pakistan.html#cb72-1"></a>roster_enriched <span class="sc">%&gt;%</span> </span>
-<span id="cb72-2"><a href="marriages-in-pakistan.html#cb72-2"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(work1_income_last_year), work1_income_last_year <span class="sc">&gt;</span> <span class="dv">0</span>,</span>
+<span id="cb72-2"><a href="marriages-in-pakistan.html#cb72-2"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(total_annual_income), total_annual_income <span class="sc">&gt;</span> <span class="dv">0</span>,</span>
 <span id="cb72-3"><a href="marriages-in-pakistan.html#cb72-3"></a>         <span class="sc">!</span><span class="fu">is.na</span>(age),</span>
 <span id="cb72-4"><a href="marriages-in-pakistan.html#cb72-4"></a>         <span class="sc">!</span>has_spouse, sex <span class="sc">==</span> <span class="st">&quot;male&quot;</span>, <span class="sc">!</span><span class="fu">is.na</span>(work1_industry),</span>
-<span id="cb72-5"><a href="marriages-in-pakistan.html#cb72-5"></a>         region <span class="sc">==</span> <span class="st">&quot;Rural&quot;</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb72-6"><a href="marriages-in-pakistan.html#cb72-6"></a>  <span class="fu">mutate</span>(<span class="at">work1_industry =</span> <span class="fu">fct_lump_n</span>(work1_industry, <span class="dv">8</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb72-7"><a href="marriages-in-pakistan.html#cb72-7"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> age, <span class="at">y =</span> work1_income_last_year, <span class="at">color =</span> work1_industry)) <span class="sc">+</span> </span>
-<span id="cb72-8"><a href="marriages-in-pakistan.html#cb72-8"></a>  <span class="fu">geom_mark_ellipse</span>(<span class="fu">aes</span>(<span class="at">filter =</span> <span class="fu">between</span>(work1_income_last_year, <span class="dv">50</span>, <span class="dv">1000</span>) <span class="sc">&amp;</span> <span class="fu">between</span>(age, <span class="dv">20</span>, <span class="dv">80</span>)), </span>
+<span id="cb72-5"><a href="marriages-in-pakistan.html#cb72-5"></a>         region <span class="sc">==</span> <span class="st">&quot;Rural&quot;</span>, work1_industry <span class="sc">==</span> <span class="st">&quot;Agriculture, forestry, fishing&quot;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb72-6"><a href="marriages-in-pakistan.html#cb72-6"></a>  <span class="fu">mutate</span>(<span class="at">work1_occupation =</span> <span class="fu">fct_lump_n</span>(work1_occupation, <span class="dv">8</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb72-7"><a href="marriages-in-pakistan.html#cb72-7"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> age, <span class="at">y =</span> total_annual_income, <span class="at">color =</span> work1_occupation)) <span class="sc">+</span> </span>
+<span id="cb72-8"><a href="marriages-in-pakistan.html#cb72-8"></a>  <span class="fu">geom_mark_ellipse</span>(<span class="fu">aes</span>(<span class="at">filter =</span> <span class="fu">between</span>(total_annual_income, <span class="dv">50</span>, <span class="dv">1000</span>) <span class="sc">&amp;</span> <span class="fu">between</span>(age, <span class="dv">20</span>, <span class="dv">80</span>)), </span>
 <span id="cb72-9"><a href="marriages-in-pakistan.html#cb72-9"></a>                    <span class="at">color =</span> <span class="st">&quot;black&quot;</span>) <span class="sc">+</span></span>
 <span id="cb72-10"><a href="marriages-in-pakistan.html#cb72-10"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.1</span>) <span class="sc">+</span> </span>
 <span id="cb72-11"><a href="marriages-in-pakistan.html#cb72-11"></a>  <span class="fu">scale_y_log10</span>(<span class="at">labels =</span> <span class="fu">label_comma</span>()) <span class="sc">+</span></span>
 <span id="cb72-12"><a href="marriages-in-pakistan.html#cb72-12"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span>) <span class="sc">+</span> </span>
 <span id="cb72-13"><a href="marriages-in-pakistan.html#cb72-13"></a>  <span class="co"># guides(color = guide_legend(override.aes = list(alpha = 1))) + </span></span>
-<span id="cb72-14"><a href="marriages-in-pakistan.html#cb72-14"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>work1_industry) <span class="sc">+</span></span>
+<span id="cb72-14"><a href="marriages-in-pakistan.html#cb72-14"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>work1_occupation) <span class="sc">+</span></span>
 <span id="cb72-15"><a href="marriages-in-pakistan.html#cb72-15"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Age&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Annual Income (PKR)&quot;</span>)</span></code></pre></div>
-<p><img src="p2-01-marriages_files/figure-html/unnamed-chunk-21-1.png" width="960" /></p>
-<p>Within agriculture basically only 1 occupation is responsible for the mode.</p>
-<p>There is a trend in agricultural communities for workers to be paid in form of room and board instead of cash. If I had loaded the other payment types then I could have verified this hypothesis.</p>
+<p><img src="p2-01-marriages_files/figure-html/unnamed-chunk-23-1.png" width="960" /></p>
 <div class="sourceCode" id="cb73"><pre class="sourceCode numberSource r numberLines"><code class="sourceCode r"><span id="cb73-1"><a href="marriages-in-pakistan.html#cb73-1"></a>roster_enriched <span class="sc">%&gt;%</span> </span>
-<span id="cb73-2"><a href="marriages-in-pakistan.html#cb73-2"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(work1_income_last_year), work1_income_last_year <span class="sc">&gt;</span> <span class="dv">0</span>,</span>
+<span id="cb73-2"><a href="marriages-in-pakistan.html#cb73-2"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(total_annual_income), total_annual_income <span class="sc">&gt;</span> <span class="dv">0</span>,</span>
 <span id="cb73-3"><a href="marriages-in-pakistan.html#cb73-3"></a>         <span class="sc">!</span><span class="fu">is.na</span>(age),</span>
 <span id="cb73-4"><a href="marriages-in-pakistan.html#cb73-4"></a>         <span class="sc">!</span>has_spouse, sex <span class="sc">==</span> <span class="st">&quot;male&quot;</span>, <span class="sc">!</span><span class="fu">is.na</span>(work1_industry),</span>
-<span id="cb73-5"><a href="marriages-in-pakistan.html#cb73-5"></a>         region <span class="sc">==</span> <span class="st">&quot;Rural&quot;</span>, work1_industry <span class="sc">==</span> <span class="st">&quot;Agriculture, forestry, fishing&quot;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb73-5"><a href="marriages-in-pakistan.html#cb73-5"></a>         region <span class="sc">==</span> <span class="st">&quot;Rural&quot;</span>, work1_industry <span class="sc">==</span> <span class="st">&quot;Other&quot;</span>) <span class="sc">%&gt;%</span> </span>
 <span id="cb73-6"><a href="marriages-in-pakistan.html#cb73-6"></a>  <span class="fu">mutate</span>(<span class="at">work1_occupation =</span> <span class="fu">fct_lump_n</span>(work1_occupation, <span class="dv">8</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb73-7"><a href="marriages-in-pakistan.html#cb73-7"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> age, <span class="at">y =</span> work1_income_last_year, <span class="at">color =</span> work1_occupation)) <span class="sc">+</span> </span>
-<span id="cb73-8"><a href="marriages-in-pakistan.html#cb73-8"></a>  <span class="fu">geom_mark_ellipse</span>(<span class="fu">aes</span>(<span class="at">filter =</span> <span class="fu">between</span>(work1_income_last_year, <span class="dv">50</span>, <span class="dv">1000</span>) <span class="sc">&amp;</span> <span class="fu">between</span>(age, <span class="dv">20</span>, <span class="dv">80</span>)), </span>
+<span id="cb73-7"><a href="marriages-in-pakistan.html#cb73-7"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> age, <span class="at">y =</span> total_annual_income, <span class="at">color =</span> work1_occupation)) <span class="sc">+</span> </span>
+<span id="cb73-8"><a href="marriages-in-pakistan.html#cb73-8"></a>  <span class="fu">geom_mark_ellipse</span>(<span class="fu">aes</span>(<span class="at">filter =</span> <span class="fu">between</span>(total_annual_income, <span class="dv">50</span>, <span class="dv">1000</span>) <span class="sc">&amp;</span> <span class="fu">between</span>(age, <span class="dv">20</span>, <span class="dv">80</span>)), </span>
 <span id="cb73-9"><a href="marriages-in-pakistan.html#cb73-9"></a>                    <span class="at">color =</span> <span class="st">&quot;black&quot;</span>) <span class="sc">+</span></span>
 <span id="cb73-10"><a href="marriages-in-pakistan.html#cb73-10"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.1</span>) <span class="sc">+</span> </span>
 <span id="cb73-11"><a href="marriages-in-pakistan.html#cb73-11"></a>  <span class="fu">scale_y_log10</span>(<span class="at">labels =</span> <span class="fu">label_comma</span>()) <span class="sc">+</span></span>
@@ -596,23 +580,23 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb73-13"><a href="marriages-in-pakistan.html#cb73-13"></a>  <span class="co"># guides(color = guide_legend(override.aes = list(alpha = 1))) + </span></span>
 <span id="cb73-14"><a href="marriages-in-pakistan.html#cb73-14"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>work1_occupation) <span class="sc">+</span></span>
 <span id="cb73-15"><a href="marriages-in-pakistan.html#cb73-15"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Age&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Annual Income (PKR)&quot;</span>)</span></code></pre></div>
-<p><img src="p2-01-marriages_files/figure-html/unnamed-chunk-22-1.png" width="960" /></p>
+<p><img src="p2-01-marriages_files/figure-html/unnamed-chunk-24-1.png" width="960" /></p>
 <p>It appears the effect of marraige on income is reversed for men and women. (TODO: check this using a model)</p>
 <div class="sourceCode" id="cb74"><pre class="sourceCode numberSource r numberLines"><code class="sourceCode r"><span id="cb74-1"><a href="marriages-in-pakistan.html#cb74-1"></a>roster_enriched <span class="sc">%&gt;%</span> </span>
-<span id="cb74-2"><a href="marriages-in-pakistan.html#cb74-2"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(work1_income_last_year)) <span class="sc">%&gt;%</span> </span>
-<span id="cb74-3"><a href="marriages-in-pakistan.html#cb74-3"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> year, <span class="at">y =</span> work1_income_last_year, <span class="at">group =</span> <span class="fu">interaction</span>(year, has_spouse), <span class="at">fill =</span> has_spouse)) <span class="sc">+</span> </span>
+<span id="cb74-2"><a href="marriages-in-pakistan.html#cb74-2"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(total_annual_income)) <span class="sc">%&gt;%</span> </span>
+<span id="cb74-3"><a href="marriages-in-pakistan.html#cb74-3"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> year, <span class="at">y =</span> total_annual_income, <span class="at">group =</span> <span class="fu">interaction</span>(year, has_spouse), <span class="at">fill =</span> has_spouse)) <span class="sc">+</span> </span>
 <span id="cb74-4"><a href="marriages-in-pakistan.html#cb74-4"></a>  <span class="fu">geom_boxplot</span>() <span class="sc">+</span> </span>
 <span id="cb74-5"><a href="marriages-in-pakistan.html#cb74-5"></a>  <span class="fu">scale_y_log10</span>(<span class="at">labels =</span> <span class="fu">label_comma</span>()) <span class="sc">+</span> </span>
 <span id="cb74-6"><a href="marriages-in-pakistan.html#cb74-6"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>sex) <span class="sc">+</span> </span>
 <span id="cb74-7"><a href="marriages-in-pakistan.html#cb74-7"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Annual Income (PKR)&quot;</span>)</span></code></pre></div>
 <pre><code>## Warning: Transformation introduced infinite values in continuous y-axis</code></pre>
-<pre><code>## Warning: Removed 514490 rows containing non-finite values (stat_boxplot).</code></pre>
-<p><img src="p2-01-marriages_files/figure-html/unnamed-chunk-23-1.png" width="672" /></p>
+<pre><code>## Warning: Removed 2981689 rows containing non-finite values (stat_boxplot).</code></pre>
+<p><img src="p2-01-marriages_files/figure-html/unnamed-chunk-25-1.png" width="960" /></p>
 <p>income of couples</p>
 <div class="sourceCode" id="cb77"><pre class="sourceCode numberSource r numberLines"><code class="sourceCode r"><span id="cb77-1"><a href="marriages-in-pakistan.html#cb77-1"></a>couples_enriched <span class="ot">&lt;-</span> couples <span class="sc">%&gt;%</span> </span>
-<span id="cb77-2"><a href="marriages-in-pakistan.html#cb77-2"></a>  <span class="fu">left_join</span>(income <span class="sc">%&gt;%</span> <span class="fu">select</span>(year,hhcode,idc,work1_income_last_year) <span class="sc">%&gt;%</span> <span class="fu">rename</span>(<span class="at">annual_income.husband =</span> work1_income_last_year),</span>
+<span id="cb77-2"><a href="marriages-in-pakistan.html#cb77-2"></a>  <span class="fu">left_join</span>(income <span class="sc">%&gt;%</span> <span class="fu">select</span>(year,hhcode,idc,total_annual_income) <span class="sc">%&gt;%</span> <span class="fu">rename</span>(<span class="at">annual_income.husband =</span> total_annual_income),</span>
 <span id="cb77-3"><a href="marriages-in-pakistan.html#cb77-3"></a>            <span class="at">by =</span> <span class="fu">c</span>(<span class="st">&quot;year&quot;</span>, <span class="st">&quot;hhcode&quot;</span>, <span class="st">&quot;idc.husband&quot;</span> <span class="ot">=</span> <span class="st">&quot;idc&quot;</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb77-4"><a href="marriages-in-pakistan.html#cb77-4"></a>  <span class="fu">left_join</span>(income <span class="sc">%&gt;%</span> <span class="fu">select</span>(year,hhcode,idc,work1_income_last_year) <span class="sc">%&gt;%</span> <span class="fu">rename</span>(<span class="at">annual_income.wife =</span> work1_income_last_year),</span>
+<span id="cb77-4"><a href="marriages-in-pakistan.html#cb77-4"></a>  <span class="fu">left_join</span>(income <span class="sc">%&gt;%</span> <span class="fu">select</span>(year,hhcode,idc,total_annual_income) <span class="sc">%&gt;%</span> <span class="fu">rename</span>(<span class="at">annual_income.wife =</span> total_annual_income),</span>
 <span id="cb77-5"><a href="marriages-in-pakistan.html#cb77-5"></a>            <span class="at">by =</span> <span class="fu">c</span>(<span class="st">&quot;year&quot;</span>, <span class="st">&quot;hhcode&quot;</span>, <span class="st">&quot;idc.wife&quot;</span> <span class="ot">=</span> <span class="st">&quot;idc&quot;</span>)) <span class="sc">%&gt;%</span> </span>
 <span id="cb77-6"><a href="marriages-in-pakistan.html#cb77-6"></a>  <span class="fu">mutate</span>(<span class="at">annual_income_gap =</span> annual_income.husband <span class="sc">-</span> annual_income.wife,</span>
 <span id="cb77-7"><a href="marriages-in-pakistan.html#cb77-7"></a>         <span class="at">is_earning.husband =</span> (annual_income.husband <span class="sc">&gt;</span> <span class="dv">0</span>) <span class="sc">&amp;</span> (<span class="sc">!</span><span class="fu">is.na</span>(annual_income.husband)),</span>
@@ -653,7 +637,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb79-9"><a href="marriages-in-pakistan.html#cb79-9"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> <span class="fu">label_percent</span>()) <span class="sc">+</span> </span>
 <span id="cb79-10"><a href="marriages-in-pakistan.html#cb79-10"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>region) <span class="sc">+</span></span>
 <span id="cb79-11"><a href="marriages-in-pakistan.html#cb79-11"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Percentage of couples&quot;</span>, <span class="at">title =</span> <span class="st">&quot;Who earns in a marriage?&quot;</span>, <span class="at">color =</span> <span class="st">&quot;&quot;</span>)</span></code></pre></div>
-<p><img src="p2-01-marriages_files/figure-html/unnamed-chunk-25-1.png" width="672" /></p>
+<p><img src="p2-01-marriages_files/figure-html/unnamed-chunk-27-1.png" width="672" /></p>
 <p>dist of income gap</p>
 <div class="sourceCode" id="cb80"><pre class="sourceCode numberSource r numberLines"><code class="sourceCode r"><span id="cb80-1"><a href="marriages-in-pakistan.html#cb80-1"></a>couples_enriched <span class="sc">%&gt;%</span> </span>
 <span id="cb80-2"><a href="marriages-in-pakistan.html#cb80-2"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> annual_income_gap)) <span class="sc">+</span></span>
@@ -663,8 +647,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <pre><code>## Warning in self$trans$transform(x): NaNs produced</code></pre>
 <pre><code>## Warning: Transformation introduced infinite values in continuous x-axis</code></pre>
 <pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
-<pre><code>## Warning: Removed 482283 rows containing non-finite values (stat_bin).</code></pre>
-<p><img src="p2-01-marriages_files/figure-html/unnamed-chunk-26-1.png" width="672" /></p>
+<pre><code>## Warning: Removed 394887 rows containing non-finite values (stat_bin).</code></pre>
+<p><img src="p2-01-marriages_files/figure-html/unnamed-chunk-28-1.png" width="672" /></p>
 <p>couple correlation</p>
 <div class="sourceCode" id="cb85"><pre class="sourceCode numberSource r numberLines"><code class="sourceCode r"><span id="cb85-1"><a href="marriages-in-pakistan.html#cb85-1"></a>couples_enriched <span class="sc">%&gt;%</span> </span>
 <span id="cb85-2"><a href="marriages-in-pakistan.html#cb85-2"></a>  <span class="co"># filter(who_earns == &quot;Both&quot;) %&gt;% </span></span>
@@ -680,15 +664,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb85-12"><a href="marriages-in-pakistan.html#cb85-12"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Husband&#39;s annual income&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Wife&#39;s annual income&quot;</span>, <span class="at">color =</span> <span class="st">&quot;Annual income gap &gt; 1 lakh PKR&quot;</span>)</span></code></pre></div>
 <pre><code>## Warning: Transformation introduced infinite values in continuous x-axis</code></pre>
 <pre><code>## Warning: Transformation introduced infinite values in continuous y-axis</code></pre>
-<pre><code>## Warning: Removed 467262 rows containing missing values (geom_point).</code></pre>
-<p><img src="p2-01-marriages_files/figure-html/unnamed-chunk-27-1.png" width="960" /></p>
+<pre><code>## Warning: Removed 533 rows containing missing values (geom_point).</code></pre>
+<p><img src="p2-01-marriages_files/figure-html/unnamed-chunk-29-1.png" width="960" /></p>
 <p>correlation of income gap with age gap</p>
 <div class="sourceCode" id="cb89"><pre class="sourceCode numberSource r numberLines"><code class="sourceCode r"><span id="cb89-1"><a href="marriages-in-pakistan.html#cb89-1"></a>couples_enriched <span class="sc">%&gt;%</span> </span>
 <span id="cb89-2"><a href="marriages-in-pakistan.html#cb89-2"></a>  <span class="co"># filter(who_earns != &quot;Neither&quot;) %&gt;%</span></span>
 <span id="cb89-3"><a href="marriages-in-pakistan.html#cb89-3"></a>  <span class="fu">filter</span>(who_earns <span class="sc">==</span> <span class="st">&quot;Both&quot;</span>) <span class="sc">%&gt;%</span></span>
 <span id="cb89-4"><a href="marriages-in-pakistan.html#cb89-4"></a>  <span class="fu">mutate</span>(<span class="at">ag.h =</span> <span class="fu">ntile</span>(age.husband, <span class="dv">4</span>), </span>
-<span id="cb89-5"><a href="marriages-in-pakistan.html#cb89-5"></a>         <span class="at">ag.w =</span> <span class="fu">ntile</span>(age.wife, <span class="dv">4</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb89-6"><a href="marriages-in-pakistan.html#cb89-6"></a><span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> age_gap, <span class="at">y =</span> annual_income_gap, <span class="at">color =</span> region)) <span class="sc">+</span> </span>
+<span id="cb89-5"><a href="marriages-in-pakistan.html#cb89-5"></a>         <span class="at">ag.w =</span> <span class="fu">ntile</span>(age.wife, <span class="dv">4</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb89-6"><a href="marriages-in-pakistan.html#cb89-6"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> age_gap, <span class="at">y =</span> annual_income_gap, <span class="at">color =</span> region)) <span class="sc">+</span> </span>
 <span id="cb89-7"><a href="marriages-in-pakistan.html#cb89-7"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.1</span>) <span class="sc">+</span></span>
 <span id="cb89-8"><a href="marriages-in-pakistan.html#cb89-8"></a>  <span class="co"># geom_smooth() + </span></span>
 <span id="cb89-9"><a href="marriages-in-pakistan.html#cb89-9"></a>  <span class="co"># scale_color_manual(values = c(&quot;#C3C3C3&quot;, &quot;#198D8D&quot;)) + </span></span>
@@ -702,8 +686,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb89-17"><a href="marriages-in-pakistan.html#cb89-17"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Age gap&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Annual income gap (PKR)&quot;</span>)</span></code></pre></div>
 <pre><code>## Warning in self$trans$transform(x): NaNs produced</code></pre>
 <pre><code>## Warning: Transformation introduced infinite values in continuous y-axis</code></pre>
-<pre><code>## Warning: Removed 726 rows containing missing values (geom_point).</code></pre>
-<p><img src="p2-01-marriages_files/figure-html/unnamed-chunk-28-1.png" width="672" /></p>
+<pre><code>## Warning: Removed 1146 rows containing missing values (geom_point).</code></pre>
+<p><img src="p2-01-marriages_files/figure-html/unnamed-chunk-30-1.png" width="672" /></p>
 
 </div>
 </div>

@@ -206,7 +206,7 @@ Let's load the income data from PSLM files as well.
 
 *Since this is just an illustrative exercise for simplicity I am only looking at reported annual cash income.*
 
-```{r}
+```{r warning=FALSE}
 all_files <- map(year_dirs, function(year_dir) paste(year_dir, "4 - Employment.csv", sep="/"))
 
 # specifying columns which are missing from the file in cols_only() causes a warning
@@ -214,51 +214,63 @@ all_files <- map(year_dirs, function(year_dir) paste(year_dir, "4 - Employment.c
 income <- map_dfr(all_files, read_csv, col_types = cols_only(year = "i",
                                                              hhcode = "d",
                                                              idc = "d",
+                                                             province = "c",
+                                                             region = "c",
+                                                             work1_occupation = "c",
+                                                             work1_industry = "c",
                                                              work1_income_last_month = "d",
                                                              work1_months_worked_last_year	 = "d",
                                                              work1_income_last_year = "d",
-                                                             work1_occupation = "c",
-                                                             work1_industry = "c",
-                                                             province = "c",
-                                                             region = "c")) %>% 
+                                                             work2_income_last_year = "d",
+                                                             other_work_income_last_year = "d",
+                                                             in_kind_income = "d",
+                                                             pension_income = "d",
+                                                             remittance_within_pak = "d",
+                                                             remittance_outside_pak = "d",
+                                                             property_rent_recieved = "d",
+                                                             other_income_without_economic_activity = "d")) %>% 
   mutate(year = floor_date(as.Date(as.character(year), format="%Y"), unit = "year"),
          region = as_factor(recode(region, 
                                    rural = "Rural", urban = "Urban")),
          province = as_factor(recode(province, 
                                      punjab = "Punjab", sindh = "Sindh", nwfp = "KPK", balochistan = "Balochistan",
-                                     NWFP = "KPK", "khyber pakhtunkhwa" = "KPK", kpk = "KPK", kp = "KPK")),
+                                     NWFP = "KPK", "khyber pakhtunkhwa" = "KPK", kpk = "KPK", kp = "KPK", gilgit = "Gilgit")),
          work1_income_last_year.calc = work1_income_last_month * work1_income_last_month,
+         work1_income_last_year.combined = pmax(work1_income_last_year, work1_income_last_year.calc),
          work1_occupation = as_factor(str_to_sentence(work1_occupation)),
          work1_industry = as_factor(str_to_sentence(work1_industry))
-         )
+         ) %>% 
+  mutate_if(is.numeric , replace_na, replace = 0) %>% 
+  mutate(total_annual_income = (work1_income_last_year.combined + work2_income_last_year + other_work_income_last_year 
+                                + in_kind_income + pension_income + remittance_within_pak + remittance_outside_pak 
+                                + property_rent_recieved + other_income_without_economic_activity))
 ```
 
 ```{r}
 head(income)
 ```
 
-```{r message=FALSE, warning=FALSE}
+distribution of total income
 
-plot_categorical <- function(tbl, cat_col, n_levels = 10, 
-                             order_col, order_fun, 
-                             do_agg = FALSE, agg_col = NULL, agg_fun = NULL) {
+```{r}
+income %>% 
+  ggplot(aes(total_annual_income)) + 
+  geom_histogram() + 
+  scale_x_log10(labels = comma)
+```
+
+
+
+```{r fig.width=11, message=FALSE, warning=FALSE}
+plot_categorical_count <- function(tbl, cat_col, n_levels = 10) {
   result <- tbl %>% 
     filter(!is.na({{ cat_col }})) %>%
-    mutate({{ cat_col }} := fct_lump_n({{ cat_col }}, n_levels),
-           {{ cat_col }} := fct_reorder({{ cat_col }}, {{ order_col }}, .fun = order_fun)) %>%
-    group_by({{ cat_col }}, region)
-  
-  if (do_agg) {
-    print(c("h1", substitute(agg_fun), as.character(enquo(agg_col))))
-    print(result)
-    result <- result %>% summarize(aggregated = agg_fun({{agg_col}}))
-    # print(result)
-  } else {
-    # print(c("h2", agg_col))
-    # This will run for count aggregations only
-    result <- result %>% summarize(aggregated = n())
-  }
-  
+    mutate({{ cat_col }} := fct_lump_n({{ cat_col }}, n_levels)) %>%
+    group_by({{ cat_col }}, region) %>% 
+    summarize(aggregated = n()) %>% 
+    ungroup() %>% 
+    mutate({{ cat_col }} := fct_reorder({{ cat_col }}, aggregated))
+
   result %>% 
     ggplot(aes(aggregated, {{ cat_col }}, fill = region)) +
     geom_col() +
@@ -266,30 +278,45 @@ plot_categorical <- function(tbl, cat_col, n_levels = 10,
 }
 
 income %>% 
-  plot_categorical(work1_occupation, 15, hhcode, length) +
+  plot_categorical_count(work1_occupation, 15) +
   labs(x = "", y = "", title = "Number of people by Occupation")
 
 income %>% 
-  plot_categorical(work1_industry, 15, hhcode, length) +
+  plot_categorical_count(work1_industry, 15) +
   labs(x = "", y = "", title = "Number of people by Industry")
 ```
 
-```{r}
-income %>% 
-  plot_categorical(work1_occupation, 15, work1_income_last_year, median, TRUE, work1_income_last_year, median) +
-  labs(x = "", y = "", title = "Median annual salary by Occupation")
+```{r fig.width=11}
+plot_categorical_summary <- function(tbl, cat_col, n_levels = 10, agg_col, agg_fun) {
+  result <- tbl %>% 
+    filter(!is.na({{ cat_col }})) %>%
+    mutate({{ cat_col }} := fct_lump_n({{ cat_col }}, n_levels)) %>%
+    group_by({{ cat_col }}, region) %>% 
+    summarize(aggregated = agg_fun({{ agg_col }})) %>% 
+    ungroup() %>% 
+    mutate({{ cat_col }} := fct_reorder({{ cat_col }}, aggregated))
+
+  result %>% 
+    ggplot(aes(aggregated, {{ cat_col }}, fill = region)) +
+    geom_col() +
+    scale_x_continuous(labels = label_comma())
+}
 
 income %>% 
-  plot_categorical(work1_industry, 15, work1_income_last_year, median, TRUE, work1_income_last_year, median) +
-  labs(x = "", y = "", title = "Median annual salary by Industry")
+  plot_categorical_summary(work1_occupation, 15, total_annual_income, mean) +
+  labs(x = "", y = "", title = "Mean annual income by Occupation")
+
+income %>% 
+  plot_categorical_summary(work1_industry, 15, total_annual_income, mean) +
+  labs(x = "", y = "", title = "Mean annual income by Industry")
 ```
 
 income over time
 
 ```{r}
 income %>% 
-  filter(!is.na(work1_income_last_year)) %>% 
-  ggplot(aes(x = year, y = work1_income_last_year, group = interaction(year, region), fill = region)) + 
+  filter(!is.na(total_annual_income)) %>% 
+  ggplot(aes(x = year, y = total_annual_income, group = interaction(year, region), fill = region)) + 
   geom_boxplot() + 
   scale_y_log10(labels = label_comma()) + 
   labs(x = "", y = "Annual Income (PKR)")
@@ -299,7 +326,7 @@ income over time married/unmarried by sex
 
 ```{r fig.width=10}
 roster_enriched <- roster %>% 
-  left_join(income %>% select(year,hhcode,idc,work1_income_last_year,work1_occupation,work1_industry),by = c("year","hhcode","idc"))
+  left_join(income %>% select(year,hhcode,idc,total_annual_income,work1_occupation,work1_industry),by = c("year","hhcode","idc"))
 
 head(roster_enriched)
 ```
@@ -308,8 +335,8 @@ There is a slight bimodal pattern in the income distribution.
 
 ```{r}
 roster_enriched %>%
-  ggplot(aes(work1_income_last_year)) + 
-  geom_histogram() + 
+  ggplot(aes(total_annual_income, fill = region)) + 
+  geom_histogram(position = "identity", alpha = 0.5) + 
   scale_x_log10(labels = comma)
 ```
 
@@ -317,10 +344,10 @@ effect of age and marriage on income. The second mode is significantly stronger 
 
 ```{r fig.width=10}
 roster_enriched %>% 
-  filter(!is.na(work1_income_last_year), work1_income_last_year > 0,
+  filter(!is.na(total_annual_income), total_annual_income > 0,
          !is.na(age)) %>% 
-  ggplot(aes(x = age, y = work1_income_last_year, color = has_spouse)) + 
-  geom_mark_ellipse(aes(filter = between(work1_income_last_year, 50, 1000) & between(age, 20, 80)), 
+  ggplot(aes(x = age, y = total_annual_income, color = has_spouse)) + 
+  geom_mark_ellipse(aes(filter = between(total_annual_income, 50, 1000) & between(age, 20, 80)), 
                     color = "black") +
   geom_point(alpha = 0.1) + 
   scale_y_log10(labels = label_comma()) +
@@ -333,10 +360,10 @@ Looking at different dimensions men are the majority of the second mode.
 
 ```{r fig.width=10}
 roster_enriched %>% 
-  filter(!is.na(work1_income_last_year), work1_income_last_year > 0,
+  filter(!is.na(total_annual_income), total_annual_income > 0,
          !is.na(age)) %>% 
-  ggplot(aes(x = age, y = work1_income_last_year, color = has_spouse)) + 
-  geom_mark_ellipse(aes(filter = between(work1_income_last_year, 50, 1000) & between(age, 20, 80)), 
+  ggplot(aes(x = age, y = total_annual_income, color = has_spouse)) + 
+  geom_mark_ellipse(aes(filter = between(total_annual_income, 50, 1000) & between(age, 20, 80)), 
                     color = "black") +
   geom_point(alpha = 0.1) + 
   scale_y_log10(labels = label_comma()) +
@@ -349,13 +376,13 @@ Looking at the most common industries the second mode is basically only present 
 
 ```{r fig.width=10}
 roster_enriched %>% 
-  filter(!is.na(work1_income_last_year), work1_income_last_year > 0,
+  filter(!is.na(total_annual_income), total_annual_income > 0,
          !is.na(age),
          !has_spouse, sex == "male", !is.na(work1_industry),
          region == "Rural") %>% 
   mutate(work1_industry = fct_lump_n(work1_industry, 8)) %>% 
-  ggplot(aes(x = age, y = work1_income_last_year, color = work1_industry)) + 
-  geom_mark_ellipse(aes(filter = between(work1_income_last_year, 50, 1000) & between(age, 20, 80)), 
+  ggplot(aes(x = age, y = total_annual_income, color = work1_industry)) + 
+  geom_mark_ellipse(aes(filter = between(total_annual_income, 50, 1000) & between(age, 20, 80)), 
                     color = "black") +
   geom_point(alpha = 0.1) + 
   scale_y_log10(labels = label_comma()) +
@@ -371,13 +398,31 @@ There is a trend in agricultural communities for workers to be paid in form of r
 
 ```{r fig.width=10}
 roster_enriched %>% 
-  filter(!is.na(work1_income_last_year), work1_income_last_year > 0,
+  filter(!is.na(total_annual_income), total_annual_income > 0,
          !is.na(age),
          !has_spouse, sex == "male", !is.na(work1_industry),
          region == "Rural", work1_industry == "Agriculture, forestry, fishing") %>% 
   mutate(work1_occupation = fct_lump_n(work1_occupation, 8)) %>% 
-  ggplot(aes(x = age, y = work1_income_last_year, color = work1_occupation)) + 
-  geom_mark_ellipse(aes(filter = between(work1_income_last_year, 50, 1000) & between(age, 20, 80)), 
+  ggplot(aes(x = age, y = total_annual_income, color = work1_occupation)) + 
+  geom_mark_ellipse(aes(filter = between(total_annual_income, 50, 1000) & between(age, 20, 80)), 
+                    color = "black") +
+  geom_point(alpha = 0.1) + 
+  scale_y_log10(labels = label_comma()) +
+  theme(legend.position = "none") + 
+  # guides(color = guide_legend(override.aes = list(alpha = 1))) + 
+  facet_wrap(~work1_occupation) +
+  labs(x = "Age", y = "Annual Income (PKR)")
+```
+
+```{r fig.width=10}
+roster_enriched %>% 
+  filter(!is.na(total_annual_income), total_annual_income > 0,
+         !is.na(age),
+         !has_spouse, sex == "male", !is.na(work1_industry),
+         region == "Rural", work1_industry == "Other") %>% 
+  mutate(work1_occupation = fct_lump_n(work1_occupation, 8)) %>% 
+  ggplot(aes(x = age, y = total_annual_income, color = work1_occupation)) + 
+  geom_mark_ellipse(aes(filter = between(total_annual_income, 50, 1000) & between(age, 20, 80)), 
                     color = "black") +
   geom_point(alpha = 0.1) + 
   scale_y_log10(labels = label_comma()) +
@@ -389,10 +434,10 @@ roster_enriched %>%
 
 It appears the effect of marraige on income is reversed for men and women. (TODO: check this using a model)
 
-```{r}
+```{r fig.width=10}
 roster_enriched %>% 
-  filter(!is.na(work1_income_last_year)) %>% 
-  ggplot(aes(x = year, y = work1_income_last_year, group = interaction(year, has_spouse), fill = has_spouse)) + 
+  filter(!is.na(total_annual_income)) %>% 
+  ggplot(aes(x = year, y = total_annual_income, group = interaction(year, has_spouse), fill = has_spouse)) + 
   geom_boxplot() + 
   scale_y_log10(labels = label_comma()) + 
   facet_wrap(~sex) + 
@@ -403,9 +448,9 @@ income of couples
 
 ```{r}
 couples_enriched <- couples %>% 
-  left_join(income %>% select(year,hhcode,idc,work1_income_last_year) %>% rename(annual_income.husband = work1_income_last_year),
+  left_join(income %>% select(year,hhcode,idc,total_annual_income) %>% rename(annual_income.husband = total_annual_income),
             by = c("year", "hhcode", "idc.husband" = "idc")) %>% 
-  left_join(income %>% select(year,hhcode,idc,work1_income_last_year) %>% rename(annual_income.wife = work1_income_last_year),
+  left_join(income %>% select(year,hhcode,idc,total_annual_income) %>% rename(annual_income.wife = total_annual_income),
             by = c("year", "hhcode", "idc.wife" = "idc")) %>% 
   mutate(annual_income_gap = annual_income.husband - annual_income.wife,
          is_earning.husband = (annual_income.husband > 0) & (!is.na(annual_income.husband)),
@@ -473,8 +518,8 @@ couples_enriched %>%
   # filter(who_earns != "Neither") %>%
   filter(who_earns == "Both") %>%
   mutate(ag.h = ntile(age.husband, 4), 
-         ag.w = ntile(age.wife, 4)) %>% 
-ggplot(aes(x = age_gap, y = annual_income_gap, color = region)) + 
+         ag.w = ntile(age.wife, 4)) %>%
+  ggplot(aes(x = age_gap, y = annual_income_gap, color = region)) + 
   geom_point(alpha = 0.1) +
   # geom_smooth() + 
   # scale_color_manual(values = c("#C3C3C3", "#198D8D")) + 
