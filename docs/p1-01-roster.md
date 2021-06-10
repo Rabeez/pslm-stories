@@ -114,7 +114,7 @@ roster %>%
 ```
 
 ```
-## # A tibble: 12 x 32
+## # A tibble: 13 x 32
 ##    year       hhcode province district region startum   psu  hhno section   idc
 ##    <date>      <dbl>    <dbl>    <dbl>  <dbl>   <dbl> <dbl> <dbl>   <dbl> <dbl>
 ##  1 2004-01-01      1        1        1      1       1     1     1       1     1
@@ -129,6 +129,7 @@ roster %>%
 ## 10 2014-01-01      1        1        1      1       0     1     0       1     1
 ## 11 2015-01-01      1        1        0      1       0     1     0       1     1
 ## 12 2018-01-01      1        1        0      1       0     1     0       0     1
+## 13 2019-01-01      1        1        1      1       0     1     0       0     1
 ## # ... with 22 more variables: sex <dbl>, residential_status <dbl>,
 ## #   relationship_w_head <dbl>, age <dbl>, marital_status <dbl>, pcode <dbl>,
 ## #   weights <dbl>, dob_d <dbl>, dob_m <dbl>, dob_y <dbl>, spouse_idc <dbl>,

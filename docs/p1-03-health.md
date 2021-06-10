@@ -311,6 +311,30 @@ health <- map_dfr(all_files, read_csv)
 ## i Use `spec()` for the full column specifications.
 ```
 
+```
+## 
+## -- Column specification --------------------------------------------------------
+## cols(
+##   year = col_double(),
+##   hhcode = col_double(),
+##   psu = col_double(),
+##   province = col_character(),
+##   region = col_character(),
+##   district = col_character(),
+##   idc = col_double(),
+##   sick_last_2weeks = col_character(),
+##   consult = col_character(),
+##   consult_type = col_character(),
+##   consult_times = col_double(),
+##   consult_problems_a = col_character(),
+##   consult_problems_b = col_character(),
+##   no_consult_reason_a = col_logical(),
+##   no_consult_reason_b = col_logical(),
+##   lhw_visit_last_month = col_character(),
+##   family_visit_hu_last_month = col_character()
+## )
+```
+
 Each individual in the survey is uniquely identified by a triplet of (year, hhcode, idc) where `year` is the year of survey, `hhcode` is household code/ID and `idc` is person ID *within the household*. 
 
 
@@ -383,7 +407,7 @@ health %>%
 ```
 
 ```
-## # A tibble: 11 x 110
+## # A tibble: 12 x 110
 ##     year hhcode province district region startum   psu  hhno section   idc
 ##    <dbl>  <dbl>    <dbl>    <dbl>  <dbl>   <dbl> <dbl> <dbl>   <dbl> <dbl>
 ##  1  2004      1        1        1      1       1 1         1   1      1   
@@ -397,6 +421,7 @@ health %>%
 ##  9  2013      1        1        0      1       0 1         0   0      1   
 ## 10  2014      1        1        1      1       0 1         1   1      1   
 ## 11  2018      1        1        0      1       0 1         0   0      1.00
+## 12  2019      1        1        1      1       0 1         0   0      1   
 ## # ... with 100 more variables: sick_last_2weeks <dbl>, consult <dbl>,
 ## #   consult_type <dbl>, consult_times <dbl>, consult_problems_a <dbl>,
 ## #   consult_problems_b <dbl>, no_consult_reason_a <dbl>,

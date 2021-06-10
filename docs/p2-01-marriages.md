@@ -280,11 +280,7 @@ income <- map_dfr(all_files, read_csv, col_types = cols_only(year = "i",
                                      NWFP = "KPK", "khyber pakhtunkhwa" = "KPK", kpk = "KPK", kp = "KPK")),
          work1_income_last_year.calc = work1_income_last_month * work1_income_last_month,
          work1_occupation = as_factor(str_to_sentence(work1_occupation)),
-         work1_industry = as_factor(str_to_sentence(work1_industry)),
-         # age_group = cut(age, 
-         #                 breaks = c(0, 12, 19, 30, 60, 100), 
-         #                 labels = c("Child", "Teenager", "Young Adult", "Adult", "Senior"), 
-         #                 ordered_result = TRUE, include.lowest = TRUE)
+         work1_industry = as_factor(str_to_sentence(work1_industry))
          )
 ```
 
@@ -377,21 +373,21 @@ income %>%
 ## [[4]]
 ## [1] "work1_income_last_year"
 ## 
-## # A tibble: 1,046,386 x 11
+## # A tibble: 1,280,159 x 11
 ## # Groups:   work1_occupation, region [32]
 ##    year        hhcode province region   idc work1_occupation    work1_industry  
 ##    <date>       <dbl> <fct>    <fct>  <dbl> <fct>               <fct>           
 ##  1 2004-01-01  1.00e9 Punjab   Urban      1 Service, shop , sa~ Social & person~
 ##  2 2004-01-01  1.00e9 Punjab   Urban      2 Service, shop , sa~ Social & person~
 ##  3 2004-01-01  1.00e9 Punjab   Urban      1 Service, shop , sa~ Social & person~
-##  4 2004-01-01  1.00e9 Punjab   Urban      1 Professionals       Social & person~
+##  4 2004-01-01  1.00e9 Punjab   Urban      1 Other               Social & person~
 ##  5 2004-01-01  1.00e9 Punjab   Urban      1 Elementary occupat~ Social & person~
-##  6 2004-01-01  1.00e9 Punjab   Urban      1 Professionals       Social & person~
+##  6 2004-01-01  1.00e9 Punjab   Urban      1 Other               Social & person~
 ##  7 2004-01-01  1.00e9 Punjab   Urban      8 Other               Social & person~
 ##  8 2004-01-01  1.00e9 Punjab   Urban      1 Other               Electricity     
 ##  9 2004-01-01  1.00e9 Punjab   Urban      3 Service, shop , sa~ Social & person~
 ## 10 2004-01-01  1.00e9 Punjab   Urban      1 Other               Social & person~
-## # ... with 1,046,376 more rows, and 4 more variables:
+## # ... with 1,280,149 more rows, and 4 more variables:
 ## #   work1_income_last_month <dbl>, work1_months_worked_last_year <dbl>,
 ## #   work1_income_last_year <dbl>, work1_income_last_year.calc <dbl>
 ```
@@ -425,8 +421,8 @@ income %>%
 ## [[4]]
 ## [1] "work1_income_last_year"
 ## 
-## # A tibble: 1,046,461 x 11
-## # Groups:   work1_industry, region [30]
+## # A tibble: 1,280,417 x 11
+## # Groups:   work1_industry, region [32]
 ##    year        hhcode province region   idc work1_occupation    work1_industry  
 ##    <date>       <dbl> <fct>    <fct>  <dbl> <fct>               <fct>           
 ##  1 2004-01-01  1.00e9 Punjab   Urban      1 Service, shop , sa~ Social & person~
@@ -439,7 +435,7 @@ income %>%
 ##  8 2004-01-01  1.00e9 Punjab   Urban      1 Clerks              Other           
 ##  9 2004-01-01  1.00e9 Punjab   Urban      3 Service, shop , sa~ Social & person~
 ## 10 2004-01-01  1.00e9 Punjab   Urban      1 Clerks              Social & person~
-## # ... with 1,046,451 more rows, and 4 more variables:
+## # ... with 1,280,407 more rows, and 4 more variables:
 ## #   work1_income_last_month <dbl>, work1_months_worked_last_year <dbl>,
 ## #   work1_income_last_year <dbl>, work1_income_last_year.calc <dbl>
 ```
@@ -449,7 +445,7 @@ income %>%
 ```
 
 ```
-## Warning: Removed 30 rows containing missing values (position_stack).
+## Warning: Removed 32 rows containing missing values (position_stack).
 ```
 
 <img src="p2-01-marriages_files/figure-html/unnamed-chunk-15-2.png" width="672" />
@@ -471,7 +467,7 @@ income %>%
 ```
 
 ```
-## Warning: Removed 514316 rows containing non-finite values (stat_boxplot).
+## Warning: Removed 514542 rows containing non-finite values (stat_boxplot).
 ```
 
 <img src="p2-01-marriages_files/figure-html/unnamed-chunk-16-1.png" width="672" />
@@ -519,7 +515,7 @@ roster_enriched %>%
 ```
 
 ```
-## Warning: Removed 3416798 rows containing non-finite values (stat_bin).
+## Warning: Removed 4250222 rows containing non-finite values (stat_bin).
 ```
 
 <img src="p2-01-marriages_files/figure-html/unnamed-chunk-18-1.png" width="672" />
@@ -628,7 +624,7 @@ roster_enriched %>%
 ```
 
 ```
-## Warning: Removed 514264 rows containing non-finite values (stat_boxplot).
+## Warning: Removed 514490 rows containing non-finite values (stat_boxplot).
 ```
 
 <img src="p2-01-marriages_files/figure-html/unnamed-chunk-23-1.png" width="672" />
@@ -717,7 +713,7 @@ couples_enriched %>%
 ```
 
 ```
-## Warning: Removed 319137 rows containing non-finite values (stat_bin).
+## Warning: Removed 482283 rows containing non-finite values (stat_bin).
 ```
 
 <img src="p2-01-marriages_files/figure-html/unnamed-chunk-26-1.png" width="672" />
@@ -749,7 +745,7 @@ ggplot(aes(x = annual_income.husband, y = annual_income.wife)) +
 ```
 
 ```
-## Warning: Removed 304223 rows containing missing values (geom_point).
+## Warning: Removed 467262 rows containing missing values (geom_point).
 ```
 
 <img src="p2-01-marriages_files/figure-html/unnamed-chunk-27-1.png" width="960" />
@@ -786,7 +782,7 @@ ggplot(aes(x = age_gap, y = annual_income_gap, color = region)) +
 ```
 
 ```
-## Warning: Removed 668 rows containing missing values (geom_point).
+## Warning: Removed 726 rows containing missing values (geom_point).
 ```
 
 <img src="p2-01-marriages_files/figure-html/unnamed-chunk-28-1.png" width="672" />

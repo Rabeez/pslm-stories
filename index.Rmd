@@ -1,6 +1,6 @@
 --- 
 title: "PSLM Stories"
-author: "Rabeez"
+author: "Rabeez Riaz"
 site: bookdown::bookdown_site
 output:
   bookdown::gitbook:
@@ -8,7 +8,7 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(attr.source = '.numberLines')
+knitr::opts_chunk$set(attr.source = '.numberLines', paged.print = TRUE)
 ```
 
 # The PSLM Survey {-}

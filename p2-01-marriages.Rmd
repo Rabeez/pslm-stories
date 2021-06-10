@@ -3,7 +3,7 @@
 # Marriages in Pakistan
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(attr.source = '.numberLines')
+knitr::opts_chunk$set(attr.source = '.numberLines', paged.print = TRUE)
 ```
 
 There are many well-known problems regarding marriages in Pakistan like child marriage, forced marriage etc. I want to investigate these phenomenon through simple analysis of the Pakistan Social And Living Standards Measurement Survey (PSLM). This is the most frequent and up-to-date demographic survey conducted in Pakistan with sufficient detail to allow interesting explorations through the data. 
@@ -229,11 +229,7 @@ income <- map_dfr(all_files, read_csv, col_types = cols_only(year = "i",
                                      NWFP = "KPK", "khyber pakhtunkhwa" = "KPK", kpk = "KPK", kp = "KPK")),
          work1_income_last_year.calc = work1_income_last_month * work1_income_last_month,
          work1_occupation = as_factor(str_to_sentence(work1_occupation)),
-         work1_industry = as_factor(str_to_sentence(work1_industry)),
-         # age_group = cut(age, 
-         #                 breaks = c(0, 12, 19, 30, 60, 100), 
-         #                 labels = c("Child", "Teenager", "Young Adult", "Adult", "Senior"), 
-         #                 ordered_result = TRUE, include.lowest = TRUE)
+         work1_industry = as_factor(str_to_sentence(work1_industry))
          )
 ```
 

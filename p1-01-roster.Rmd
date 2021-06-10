@@ -3,7 +3,7 @@
 # The Household Roster
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(attr.source = '.numberLines')
+knitr::opts_chunk$set(attr.source = '.numberLines', paged.print = TRUE)
 ```
 
 ```{r message=FALSE, warning=FALSE, results=FALSE}

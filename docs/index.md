@@ -1,6 +1,6 @@
 --- 
 title: "PSLM Stories"
-author: "Rabeez"
+author: "Rabeez Riaz"
 site: bookdown::bookdown_site
 output:
   bookdown::gitbook:

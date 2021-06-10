@@ -21,7 +21,7 @@
   
   
 
-<meta name="author" content="Rabeez" />
+<meta name="author" content="Rabeez Riaz" />
 
 
 
@@ -176,19 +176,19 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
             <section class="normal" id="section-">
 <div id="health" class="section level1" number="3">
 <h1><span class="header-section-number">3</span> Health</h1>
-<div class="sourceCode" id="cb25"><pre class="sourceCode numberSource r numberLines"><code class="sourceCode r"><span id="cb25-1"><a href="health.html#cb25-1"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb25-2"><a href="health.html#cb25-2"></a><span class="fu">library</span>(lubridate)</span>
-<span id="cb25-3"><a href="health.html#cb25-3"></a><span class="fu">library</span>(scales)</span>
-<span id="cb25-4"><a href="health.html#cb25-4"></a><span class="fu">library</span>(patchwork)</span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode numberSource r numberLines"><code class="sourceCode r"><span id="cb12-1"><a href="health.html#cb12-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb12-2"><a href="health.html#cb12-2"></a><span class="fu">library</span>(lubridate)</span>
+<span id="cb12-3"><a href="health.html#cb12-3"></a><span class="fu">library</span>(scales)</span>
+<span id="cb12-4"><a href="health.html#cb12-4"></a><span class="fu">library</span>(patchwork)</span></code></pre></div>
 <p>I load the health section data for each year and combine it into a single tibble/dataframe for easy analysis.</p>
 <p>The health section was skipped in 2015’s survey so I remove that filename before loading the data.</p>
 <p><em>There are parsing errors for some columns. I find it better to just choose the required columns for the analysis with <code>cols_only</code> and manually specify types for them then manually fix encoding issues.</em></p>
-<div class="sourceCode" id="cb26"><pre class="sourceCode numberSource r numberLines"><code class="sourceCode r"><span id="cb26-1"><a href="health.html#cb26-1"></a>root_dir <span class="ot">&lt;-</span> <span class="st">&quot;C:/Users/R/Desktop/pslm/data_clean&quot;</span></span>
-<span id="cb26-2"><a href="health.html#cb26-2"></a>year_dirs <span class="ot">&lt;-</span> <span class="fu">head</span>(<span class="fu">list.dirs</span>(root_dir, <span class="at">recursive =</span> F), <span class="sc">-</span><span class="dv">1</span>)</span>
-<span id="cb26-3"><a href="health.html#cb26-3"></a>all_files <span class="ot">&lt;-</span> <span class="fu">map</span>(year_dirs, <span class="cf">function</span>(year_dir) <span class="fu">paste</span>(year_dir, <span class="st">&quot;3 - Health.csv&quot;</span>, <span class="at">sep=</span><span class="st">&quot;/&quot;</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb26-4"><a href="health.html#cb26-4"></a>  <span class="fu">keep</span>(file.exists)</span>
-<span id="cb26-5"><a href="health.html#cb26-5"></a></span>
-<span id="cb26-6"><a href="health.html#cb26-6"></a>health <span class="ot">&lt;-</span> <span class="fu">map_dfr</span>(all_files, read_csv)</span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode numberSource r numberLines"><code class="sourceCode r"><span id="cb13-1"><a href="health.html#cb13-1"></a>root_dir <span class="ot">&lt;-</span> <span class="st">&quot;C:/Users/R/Desktop/pslm/data_clean&quot;</span></span>
+<span id="cb13-2"><a href="health.html#cb13-2"></a>year_dirs <span class="ot">&lt;-</span> <span class="fu">head</span>(<span class="fu">list.dirs</span>(root_dir, <span class="at">recursive =</span> F), <span class="sc">-</span><span class="dv">1</span>)</span>
+<span id="cb13-3"><a href="health.html#cb13-3"></a>all_files <span class="ot">&lt;-</span> <span class="fu">map</span>(year_dirs, <span class="cf">function</span>(year_dir) <span class="fu">paste</span>(year_dir, <span class="st">&quot;3 - Health.csv&quot;</span>, <span class="at">sep=</span><span class="st">&quot;/&quot;</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb13-4"><a href="health.html#cb13-4"></a>  <span class="fu">keep</span>(file.exists)</span>
+<span id="cb13-5"><a href="health.html#cb13-5"></a></span>
+<span id="cb13-6"><a href="health.html#cb13-6"></a>health <span class="ot">&lt;-</span> <span class="fu">map_dfr</span>(all_files, read_csv)</span></code></pre></div>
 <pre><code>## 
 ## -- Column specification --------------------------------------------------------
 ## cols(
@@ -441,8 +441,29 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ##   hepatitis_precautions_what = col_logical()
 ## )
 ## i Use `spec()` for the full column specifications.</code></pre>
+<pre><code>## 
+## -- Column specification --------------------------------------------------------
+## cols(
+##   year = col_double(),
+##   hhcode = col_double(),
+##   psu = col_double(),
+##   province = col_character(),
+##   region = col_character(),
+##   district = col_character(),
+##   idc = col_double(),
+##   sick_last_2weeks = col_character(),
+##   consult = col_character(),
+##   consult_type = col_character(),
+##   consult_times = col_double(),
+##   consult_problems_a = col_character(),
+##   consult_problems_b = col_character(),
+##   no_consult_reason_a = col_logical(),
+##   no_consult_reason_b = col_logical(),
+##   lhw_visit_last_month = col_character(),
+##   family_visit_hu_last_month = col_character()
+## )</code></pre>
 <p>Each individual in the survey is uniquely identified by a triplet of (year, hhcode, idc) where <code>year</code> is the year of survey, <code>hhcode</code> is household code/ID and <code>idc</code> is person ID <em>within the household</em>.</p>
-<div class="sourceCode" id="cb38"><pre class="sourceCode numberSource r numberLines"><code class="sourceCode r"><span id="cb38-1"><a href="health.html#cb38-1"></a><span class="fu">head</span>(health)</span></code></pre></div>
+<div class="sourceCode" id="cb26"><pre class="sourceCode numberSource r numberLines"><code class="sourceCode r"><span id="cb26-1"><a href="health.html#cb26-1"></a><span class="fu">head</span>(health)</span></code></pre></div>
 <pre><code>## # A tibble: 6 x 110
 ##    year     hhcode province district  region startum     psu  hhno section   idc
 ##   &lt;dbl&gt;      &lt;dbl&gt; &lt;chr&gt;    &lt;chr&gt;     &lt;chr&gt;    &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;   &lt;dbl&gt;
@@ -496,10 +517,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## #   hepatitis_precautions &lt;chr&gt;, hepatitis_precautions_what &lt;lgl&gt;,
 ## #   tb_last_year &lt;chr&gt;, tb_know_spread &lt;chr&gt;, tb_know_cure &lt;chr&gt;</code></pre>
 <p>Since the survey questionnaire changes across years and some questions are not asked there are some columns with significant variations in the available data. This is before considering that even if a question is asked the respondent might not provide/know the answer.</p>
-<div class="sourceCode" id="cb40"><pre class="sourceCode numberSource r numberLines"><code class="sourceCode r"><span id="cb40-1"><a href="health.html#cb40-1"></a>health <span class="sc">%&gt;%</span> </span>
-<span id="cb40-2"><a href="health.html#cb40-2"></a>  <span class="fu">group_by</span>(year) <span class="sc">%&gt;%</span> </span>
-<span id="cb40-3"><a href="health.html#cb40-3"></a>  <span class="fu">summarise_all</span>(<span class="sc">~</span> <span class="fu">mean</span>(<span class="sc">!</span><span class="fu">is.na</span>(.)))</span></code></pre></div>
-<pre><code>## # A tibble: 11 x 110
+<div class="sourceCode" id="cb28"><pre class="sourceCode numberSource r numberLines"><code class="sourceCode r"><span id="cb28-1"><a href="health.html#cb28-1"></a>health <span class="sc">%&gt;%</span> </span>
+<span id="cb28-2"><a href="health.html#cb28-2"></a>  <span class="fu">group_by</span>(year) <span class="sc">%&gt;%</span> </span>
+<span id="cb28-3"><a href="health.html#cb28-3"></a>  <span class="fu">summarise_all</span>(<span class="sc">~</span> <span class="fu">mean</span>(<span class="sc">!</span><span class="fu">is.na</span>(.)))</span></code></pre></div>
+<pre><code>## # A tibble: 12 x 110
 ##     year hhcode province district region startum   psu  hhno section   idc
 ##    &lt;dbl&gt;  &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;
 ##  1  2004      1        1        1      1       1 1         1   1      1   
@@ -513,6 +534,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ##  9  2013      1        1        0      1       0 1         0   0      1   
 ## 10  2014      1        1        1      1       0 1         1   1      1   
 ## 11  2018      1        1        0      1       0 1         0   0      1.00
+## 12  2019      1        1        1      1       0 1         0   0      1   
 ## # ... with 100 more variables: sick_last_2weeks &lt;dbl&gt;, consult &lt;dbl&gt;,
 ## #   consult_type &lt;dbl&gt;, consult_times &lt;dbl&gt;, consult_problems_a &lt;dbl&gt;,
 ## #   consult_problems_b &lt;dbl&gt;, no_consult_reason_a &lt;dbl&gt;,

@@ -21,7 +21,7 @@
   
   
 
-<meta name="author" content="Rabeez" />
+<meta name="author" content="Rabeez Riaz" />
 
 
 
@@ -255,7 +255,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="sourceCode" id="cb6"><pre class="sourceCode numberSource r numberLines"><code class="sourceCode r"><span id="cb6-1"><a href="the-household-roster.html#cb6-1"></a>roster <span class="sc">%&gt;%</span> </span>
 <span id="cb6-2"><a href="the-household-roster.html#cb6-2"></a>  <span class="fu">group_by</span>(year) <span class="sc">%&gt;%</span> </span>
 <span id="cb6-3"><a href="the-household-roster.html#cb6-3"></a>  <span class="fu">summarise_all</span>(<span class="sc">~</span> <span class="fu">mean</span>(<span class="sc">!</span><span class="fu">is.na</span>(.)))</span></code></pre></div>
-<pre><code>## # A tibble: 12 x 32
+<pre><code>## # A tibble: 13 x 32
 ##    year       hhcode province district region startum   psu  hhno section   idc
 ##    &lt;date&gt;      &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;
 ##  1 2004-01-01      1        1        1      1       1     1     1       1     1
@@ -270,6 +270,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## 10 2014-01-01      1        1        1      1       0     1     0       1     1
 ## 11 2015-01-01      1        1        0      1       0     1     0       1     1
 ## 12 2018-01-01      1        1        0      1       0     1     0       0     1
+## 13 2019-01-01      1        1        1      1       0     1     0       0     1
 ## # ... with 22 more variables: sex &lt;dbl&gt;, residential_status &lt;dbl&gt;,
 ## #   relationship_w_head &lt;dbl&gt;, age &lt;dbl&gt;, marital_status &lt;dbl&gt;, pcode &lt;dbl&gt;,
 ## #   weights &lt;dbl&gt;, dob_d &lt;dbl&gt;, dob_m &lt;dbl&gt;, dob_y &lt;dbl&gt;, spouse_idc &lt;dbl&gt;,
